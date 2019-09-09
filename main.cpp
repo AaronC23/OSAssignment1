@@ -7,7 +7,7 @@ using namespace std;
 
 class Customer{  
 private:
-		int custID;
+		string custID;
 		int arrivalTime;
 		int priority;
 		int age;
@@ -22,6 +22,10 @@ private:
 public:
 	Customer(){
 		
+	}
+
+	int getCustID(){
+		return custID;
 	}
 
 	void process(){
@@ -51,7 +55,9 @@ public:
 	}
 
 	void moveToExecutingQueue(int custID){
-
+		for(int i=0;i<queue.size();i++){
+			if(queue[i].)
+		}
 	}
 
 	void processQueue(){
