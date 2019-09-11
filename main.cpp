@@ -24,6 +24,10 @@ public:
 		
 	}
 
+	int getCustID(){
+		return custID;
+	}
+
 	void process(){
 		currentRuns++;
 		if(currentRuns == 3){
@@ -51,7 +55,15 @@ public:
 	}
 
 	void moveToExecutingQueue(int custID){
-
+		for(int i=0;i<queue.size();i++){
+			if(queue[i].getCustID == custID){
+				Customer moveCustomer = queue[i];
+				queue.erase(queue.begin()+i);
+				executingQueue.push_back(moveCustomer);
+				break;
+			}
+		}
+		return;
 	}
 
 	void processQueue(){
@@ -61,9 +73,15 @@ public:
 
 void changeQueue(CustomerQueue* q1, CustomerQueue* q2, int custID){
 	
-	for(int i=0;i<q1.queueSize();i++){
-		if()
+	for(int i=0;i<q1->queueSize();i++){
+		if(q1->at(i)->getCustID == custID){
+			Customer moveCustomer = queue->at(i);
+			q1->erase(q1->begin()+i);
+			q2->push_back(moveCustomer);
+			break;
+		}
 	}
+	return;
 }
 
 int main(int argc, char *argv[]){
