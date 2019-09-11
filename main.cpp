@@ -7,7 +7,7 @@ using namespace std;
 
 class Customer{  
 private:
-		string custID;
+		int custID;
 		int arrivalTime;
 		int priority;
 		int age;
