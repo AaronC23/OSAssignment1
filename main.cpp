@@ -39,10 +39,10 @@ public:
 
 // stores customers and processes the queue
 class CustomerQueue{
-private:
+public:
 	vector<Customer> queue;
 	vector<Customer> executingQueue;
-public:
+
 	CustomerQueue(){
 	}
 
@@ -56,7 +56,7 @@ public:
 
 	void moveToExecutingQueue(int custID){
 		for(int i=0;i<queue.size();i++){
-			if(queue[i].getCustID == custID){
+			if(queue[i].getCustID() == custID){
 				Customer moveCustomer = queue[i];
 				queue.erase(queue.begin()+i);
 				executingQueue.push_back(moveCustomer);
@@ -74,10 +74,10 @@ public:
 void changeQueue(CustomerQueue* q1, CustomerQueue* q2, int custID){
 	
 	for(int i=0;i<q1->queueSize();i++){
-		if(q1->at(i)->getCustID == custID){
-			Customer moveCustomer = queue->at(i);
-			q1->erase(q1->begin()+i);
-			q2->push_back(moveCustomer);
+		if(q1->queue.at(i).getCustID() == custID){
+			Customer moveCustomer = q1->queue.at(i);
+			q1->queue.erase(q1->queue.begin()+i);
+			q2->queue.push_back(moveCustomer);
 			break;
 		}
 	}
@@ -87,7 +87,7 @@ void changeQueue(CustomerQueue* q1, CustomerQueue* q2, int custID){
 int main(int argc, char *argv[]){
 	Customer customer;
 	CustomerQueue customerQueue1;
-	CustomerQUeue customerQueue2;
+	CustomerQueue customerQueue2;
 	int counter=-1;
 	string str;
 	string token;
