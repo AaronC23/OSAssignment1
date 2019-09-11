@@ -6,7 +6,7 @@
 using namespace std;
 
 class Customer{  
-private:
+public:
 		int custID;
 		int arrivalTime;
 		int priority;
@@ -19,7 +19,7 @@ private:
 		int runningTime; //Duration of buying tickets
 		int waitingTime; //Duration of waiting
 		int terminationTime; //Time when process bought all tickets
-public:
+
 	Customer(){
 		
 	}
@@ -85,37 +85,41 @@ void changeQueue(CustomerQueue* q1, CustomerQueue* q2, int custID){
 }
 
 int main(int argc, char *argv[]){
-	char str[256];
+	Customer customer;
+	CustomerQueue customerQueue1;
+	CustomerQUeue customerQueue2;
+	int counter=-1;
+	string str;
+	string token;
+	string id;
 	string delimiter = " ";
 	size_t pos = 0;
-	string token;
-	ifstream infile(argv[1]);
-	while(infile) {
-		Customer customer;
-	   	infile.getline(str, 256);  // delim defaults to '\n'
-	   	while((pos = s.find(delimiter)) != string:npos){
-			token = s.substr(0,pos);
-			cout << token << endl;
-			s.erase(0,pos+delimiter.length());
+	ifstream file(argv[1]);
+	while (getline(file, str)) {
+		counter=-1;
+		while((pos = str.find(delimiter)) != string::npos){
+			counter++;
+			token = str.substr(0, pos);
+			if(counter==0){
+				for (unsigned int i = 1; i < token.length(); i++){
+					id+=token.at(i);
+				}
+				customer.custID=stoi(id);
+			} else if (counter==1){
+				customer.arrivalTime=stoi(token);
+			} else if (counter==2){
+				customer.priority=stoi(token);
+			} else if (counter==3){
+				customer.age=stoi(token);
+			}
+			str.erase(0, pos + delimiter.length());
 		}
-	   	if(priority<=3){
-	   		queueOne.addCustomer(customer);
-	   	} else {
-	   		queueTwo.addCustomer(customer);
-	   	}
-	   	if(infile) cout << str << endl;
+		customer.tickets=stoi(str);
+		if(customer.priority<=3){
+			customerQueue1.addCustomer(customer);
+		} else if (customer.priority>3){
+			customerQueue2.addCustomer(customer);
+		}
 	}
 	return 0;
 }
-
-std::string s = "scott>=tiger>=mushroom";
-std::string delimiter = ">=";
-
-size_t pos = 0;
-std::string token;
-while ((pos = s.find(delimiter)) != std::string::npos) {
-    token = s.substr(0, pos);
-    std::cout << token << std::endl;
-    s.erase(0, pos + delimiter.length());
-}
-std::cout << s << std::endl;
