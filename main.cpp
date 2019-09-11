@@ -67,7 +67,8 @@ void changeQueue(CustomerQueue* q1, CustomerQueue* q2, int custID){
 
 int main(int argc, char *argv[]){
 	Customer customer;
-	CustomerQueue customerQueue;
+	CustomerQueue customerQueue1;
+	CustomerQUeue customerQueue2;
 	int counter=-1;
 	string str;
 	string token;
@@ -95,7 +96,11 @@ int main(int argc, char *argv[]){
 			str.erase(0, pos + delimiter.length());
 		}
 		customer.tickets=stoi(str);
-		customerQueue.addCustomer(customer);
+		if(customer.priority<=3){
+			customerQueue1.addCustomer(customer);
+		} else if (customer.priority>3){
+			customerQueue2.addCustomer(customer);
+		}
 	}
 	return 0;
 }
