@@ -23,9 +23,47 @@ public:
 	Customer(){
 		
 	}
-
-
+	void process(){
+		currentRuns++;
+		if(currentRuns == 3){
+			currentRuns = 0;
+			priority++;
+		}
+	}
 };
+
+// stores customers and processes the queue
+class CustomerQueue{
+private:
+	vector<Customer> queue;
+	vector<Customer> executingQueue;
+public:
+	CustomerQueue(){
+	}
+
+	int queueSize(){
+		return queue.size();
+	}
+
+	void addCustomer(Customer cust){
+		queue.push_back(cust);
+	}
+
+	void moveToExecutingQueue(int custID){
+
+	}
+
+	void processQueue(){
+
+	}
+};
+
+void changeQueue(CustomerQueue* q1, CustomerQueue* q2, int custID){
+	
+	for(int i=0;i<q1.queueSize();i++){
+		if()
+	}
+}
 
 int main(int argc, char *argv[]){
 	Customer customer;
