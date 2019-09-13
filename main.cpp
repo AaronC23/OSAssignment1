@@ -291,7 +291,7 @@ public:
 	void checkForLongWait(){
 		for (int i = 0; i < leaverbuster_queue.size(); i++){
 			if(leaverbuster_queue[i].waitCount%8==0){
-				leaverbuster_queue.increasePriority();
+				leaverbuster_queue[i].increasePriority();
 			}
 		}
 	}
