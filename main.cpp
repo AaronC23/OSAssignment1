@@ -70,7 +70,7 @@ public:
 			return 0;
 		} else {
 			//If we are in Queue2 it doesn't matter
-			return -1;
+			return queueNum;
 		}
 	}
 
