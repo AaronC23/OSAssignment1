@@ -16,7 +16,8 @@ public:
 		int arrivalTime;
 		int priority;
 		int age;
-		int tickets;
+		int ticketQuota;
+		int ticketsRemaining;
 		int queue;
 		int waitCount;
 		int currentRuns;
@@ -93,6 +94,12 @@ public:
 			return 0;
 		}
 	}
+
+	int getTicketQuantum(int prio){
+		int temp = (8-prio)*10;
+		return temp/5;
+	}
+
 };
 
 bool IDCheck(const Customer &c1, const Customer &c2){
@@ -283,19 +290,19 @@ public:
 		}
 	}
 
-	Customer getFrontCustomer(){
+	Customer* getFrontCustomer(){
 		if(sub_queue_one.size()==0){
 			if(sub_queue_two.size()!=0){
-				return sub_queue_two[0];
+				return &sub_queue_two[0];
 			} else if(sub_queue_two.size()==0){
 				if(sub_queue_three.size()!=0){
-					return sub_queue_three[0];
+					return &sub_queue_three[0];
 				} else if(sub_queue_three.size()==0){
-					return leaverbuster_queue[0];
+					return &leaverbuster_queue[0];
 				}
 			}
 		} else if (sub_queue_one.size()!=0){
-			return sub_queue_one[0];
+			return &sub_queue_one[0];
 		}
 	}
 
@@ -324,7 +331,7 @@ public:
 
 	int main(int argc, char *argv[]){
 		CustomerQueue customerQueue;
-		Customer currentCustomer;
+		Customer* currentCustomer;
 		int counter=-1;
 		string str;
 		string token;
@@ -353,7 +360,7 @@ public:
 				}
 				str.erase(0, pos + delimiter.length());
 			}
-			customer.tickets=StringToInt(str);
+			customer.ticketsRemaining=StringToInt(str);
 			customerQueue.addCustomer(customer);
 		}
 		customerQueue.checkQueues();
@@ -363,6 +370,12 @@ public:
 		cout << "move customer 9 from leaverbuster to subqueue 3" << endl;
 		customerQueue.changeQueue(0,3,9);
 		customerQueue.checkQueues();
+
+
+		currentCustomer=customerQueue.getFrontCustomer();
+		currentCustomer->ticketQuota=currentCustomer->getTicketQuantum(currentCustomer->priority);
+		cout << "Current ticket quota is: " << currentCustomer->ticketQuota << endl;
+
 		// customerQueue.getIndex()
 
 
