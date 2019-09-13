@@ -149,8 +149,8 @@ public:
 	}
 
 	int getIndex(Customer cust){
-		for(int i = 0; i<getQueue(cust.queue).size(); i++){
-			if(getQueue(cust.queue).at(i).custID==cust.custID){
+		for(int i = 0; i<getQueue(cust.queue)->size(); i++){
+			if(getQueue(cust.queue)->at(i).custID==cust.custID){
 				return i;
 			}
 		}
@@ -258,27 +258,38 @@ public:
 		}
 	}
 
-	vector<Customer> getQueue(int queueNum){
+	vector<Customer> * getQueue(int queueNum){
 		if(queueNum==1){
-			return sub_queue_one;
+			return &sub_queue_one;
 		} else if (queueNum==2){
-			return sub_queue_two;
+			return &sub_queue_two;
 		} else if (queueNum==3){
-			return sub_queue_three;
+			return &sub_queue_three;
 		} else if (queueNum==0){
-			return leaverbuster_queue;
+			return &leaverbuster_queue;
 		}
 	}
 
 	//Swap a customer from queue 1 to queue 2 (IDK HOW TO DO THIS)
 	void changeQueue(int queue1, int queue2, int custID){
+		vector<Customer> * q1 = getQueue(queue1);
+		vector<Customer> * q2 = getQueue(queue2);
 
+		// iterate through vector to find customer with ID
+		for(int i=0;i<q1->size();i++){
+			if(q1->at(i).custID == custID){
+				Customer move = q1->at(i);
+				q1->erase(q1->begin()+i);
+				q2->push_back(move);
+				break;
+			}
+		}
 	}
 
 	void printQueue(int queueNum){
-		vector<Customer> temp = getQueue(queueNum);
-		for (int i = 0; i < temp.size(); i++){
-			cout << temp[i].custID << endl;
+		vector<Customer> * temp = getQueue(queueNum);
+		for (int i = 0; i < temp->size(); i++){
+			cout << temp->at(i).custID << endl;
 		}
 	}
 
@@ -334,6 +345,9 @@ public:
 		customerQueue.checkQueues();
 		cout << "sort customers" << endl;
 		customerQueue.sortArrivals();
+		customerQueue.checkQueues();
+		cout << "move customer 9 from leaverbuster to subqueue 3" << endl;
+		customerQueue.changeQueue(0,3,9);
 		customerQueue.checkQueues();
 		// customerQueue.getIndex()
 
