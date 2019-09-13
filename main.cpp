@@ -18,7 +18,7 @@ public:
 		int age;
 		int tickets;
 		int queue;
-		int interruptCount;
+		int waitCount;
 		int currentRuns;
 		int queuePos; //Might not need this
 		int runningTime; //Duration of buying tickets
@@ -112,19 +112,6 @@ public:
 	}
 
 	//Public functions
-
-	//I'M NOT SURE IF WE NEED THIS FUNCTION, lemme know if we do
-	// void moveToExecutingQueue(int custID){
-	// 	for(int i=0;i<queue.size();i++){
-	// 		if(queue[i].getCustID() == custID){
-	// 			Customer moveCustomer = queue[i];
-	// 			queue.erase(queue.begin()+i);
-	// 			executingQueue.push_back(moveCustomer);
-	// 			break;
-	// 		}
-	// 	}
-	// 	return;
-	// }
 
 	void processQueue(){
 
@@ -248,10 +235,13 @@ public:
 	//
 	void addCustomer(Customer cust){
 		if(cust.priority==1){
+			cust.queue=1;
 			sub_queue_one.push_back(cust);
 		} else if (cust.priority==2){
+			cust.queue=2;
 			sub_queue_two.push_back(cust);
 		} else if (cust.priority==3){
+			cust.queue=3;
 			sub_queue_three.push_back(cust);
 		} else {
 			leaverbuster_queue.push_back(cust);
@@ -293,6 +283,30 @@ public:
 		}
 	}
 
+	Customer getFrontCustomer(){
+		if(sub_queue_one.size()==0){
+			if(sub_queue_two.size()!=0){
+				return sub_queue_two[0];
+			} else if(sub_queue_two.size()==0){
+				if(sub_queue_three.size()!=0){
+					return sub_queue_three[0];
+				} else if(sub_queue_three.size()==0){
+					return leaverbuster_queue[0];
+				}
+			}
+		} else if (sub_queue_one.size()!=0){
+			return sub_queue_one[0];
+		}
+	}
+
+	void checkForLongWait(){
+		for (int i = 0; i < leaverbuster_queue.size(); i++){
+			if(leaverbuster_queue[i].waitCount%8==0){
+				leaverbuster_queue.increasePriority();
+			}
+		}
+	}
+
 	//Queue 1 functions
 
 	//Queue 2 functions
@@ -304,13 +318,13 @@ public:
 		stringstream output(input);
 		int returnValue = 0;
 		output >> returnValue;
-		cout << "Return Value is: " << returnValue << endl;
 		output.str("");
 		return returnValue;
 	}
 
 	int main(int argc, char *argv[]){
 		CustomerQueue customerQueue;
+		Customer currentCustomer;
 		int counter=-1;
 		string str;
 		string token;
@@ -350,7 +364,6 @@ public:
 		customerQueue.changeQueue(0,3,9);
 		customerQueue.checkQueues();
 		// customerQueue.getIndex()
-
 
 
 		//At the end of each "tick" we need to call several functions for each customer.
