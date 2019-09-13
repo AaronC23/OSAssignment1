@@ -302,7 +302,7 @@ public:
 	void checkForLongWait(){
 		for (int i = 0; i < leaverbuster_queue.size(); i++){
 			if(leaverbuster_queue[i].waitCount%8==0){
-				leaverbuster_queue.increasePriority();
+				leaverbuster_queue[i].increasePriority();
 			}
 		}
 	}
@@ -323,6 +323,9 @@ public:
 	}
 
 	int main(int argc, char *argv[]){
+		// stores all the customers that will be added to the queue
+		map<int, vector<Customer> > parsedCustomers;
+
 		CustomerQueue customerQueue;
 		Customer currentCustomer;
 		int counter=-1;
@@ -354,15 +357,33 @@ public:
 				str.erase(0, pos + delimiter.length());
 			}
 			customer.tickets=StringToInt(str);
-			customerQueue.addCustomer(customer);
+			// add customer to parsed customer map
+			parsedCustomers[customer.arrivalTime].push_back(customer);
+			// customerQueue.addCustomer(customer);
 		}
-		customerQueue.checkQueues();
-		cout << "sort customers" << endl;
-		customerQueue.sortArrivals();
-		customerQueue.checkQueues();
-		cout << "move customer 9 from leaverbuster to subqueue 3" << endl;
-		customerQueue.changeQueue(0,3,9);
-		customerQueue.checkQueues();
+
+		map<int, vector<Customer> >::iterator it = parsedCustomers.begin();
+		for(int tick = 0; tick<500; tick++) {
+			if(it->first == tick) {
+				// add each customer at this instance of time to a queue
+				cout << "adding " << it->second.size() << " customers to the queue at time " << tick << endl;
+				// sort it based on ID already, they wont be added to the same queue anyway
+				sort(it->second.begin(),it->second.end(),IDCheck);
+				for(int i=0;i<it->second.size();i++){
+					customerQueue.addCustomer(it->second.at(i));
+				}
+				customerQueue.sortArrivals();
+				customerQueue.checkQueues();
+				it++;
+			}
+		}
+		// customerQueue.checkQueues();
+		// cout << "sort customers" << endl;
+		// customerQueue.sortArrivals();
+		// customerQueue.checkQueues();
+		// cout << "move customer 9 from leaverbuster to subqueue 3" << endl;
+		// customerQueue.changeQueue(0,3,9);
+		// customerQueue.checkQueues();
 		// customerQueue.getIndex()
 
 
