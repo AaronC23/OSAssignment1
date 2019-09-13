@@ -1,12 +1,16 @@
-#undef __STRICT_ANSI__ 
+#undef __STRICT_ANSI__
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <iostream>
 #include <vector>
+#include <map>
+#include <set>
+#include <algorithm>
+#include <functional>
 using namespace std;
 
-class Customer{  
+class Customer{
 public:
 		int custID;
 		int arrivalTime;
@@ -21,7 +25,9 @@ public:
 		int waitingTime; //Duration of waiting
 		int terminationTime; //Time when process bought all tickets
 	Customer(){
-		
+		runningTime = 0;
+		terminationTime = -1;
+		waitingTime = -1;
 	}
 
 	int getCustID(){
@@ -49,9 +55,9 @@ public:
 		}
 	}
 
-	//Check if a process needs to be demoted or not, given the queue they are in. 
+	//Check if a process needs to be demoted or not, given the queue they are in.
 	//Use of function is:
-	//if(demote(cust.queue)!=cust.queue) 
+	//if(demote(cust.queue)!=cust.queue)
 	//{
 	//	swapQueue(cust.queue,demote(cust.queue));
 	//}
@@ -89,6 +95,10 @@ public:
 	}
 };
 
+bool IDCheck(const Customer &c1, const Customer &c2){
+	return c1.custID < c2.custID;
+}
+
 // stores customers and processes the queue
 class CustomerQueue{
 public:
@@ -97,7 +107,7 @@ public:
 	vector<Customer> sub_queue_two;
 	vector<Customer> sub_queue_three;
 
-	CustomerQueue(){ 
+	CustomerQueue(){
 
 	}
 
@@ -133,9 +143,92 @@ public:
 		}
 	}
 
-	//Here you are John 
+	//Here you are John
 	void sortArrivals(){
+		// sort 1-3 sorts the subqueues 1-3, 4 sorts the 2nd queue
+		map<int, vector<Customer> > customerSort1;
+		map<int, vector<Customer> > customerSort2;
+		map<int, vector<Customer> > customerSort3;
+		map<int, vector<Customer> > customerSort4;
 
+		// put all those customers into a map so we can put them in the subqueue again
+		for(int i=0;i<sub_queue_one.size();i++){
+			customerSort1[sub_queue_one.at(i).arrivalTime].push_back(sub_queue_one.at(i));
+		}
+		for(int i=0;i<sub_queue_two.size();i++){
+			customerSort2[sub_queue_two.at(i).arrivalTime].push_back(sub_queue_two.at(i));
+		}
+		for(int i=0;i<sub_queue_three.size();i++){
+			customerSort3[sub_queue_three.at(i).arrivalTime].push_back(sub_queue_three.at(i));
+		}
+		for(int i=0;i<leaverbuster_queue.size();i++){
+			customerSort4[leaverbuster_queue.at(i).arrivalTime].push_back(leaverbuster_queue.at(i));
+		}
+
+		// sort each vector in the maps
+		map<int, vector<Customer> >::iterator it;
+		for(it = customerSort1.begin(); it!= customerSort1.end(); it++){
+			sort(it->second.begin(),it->second.end(),IDCheck);
+		}
+		for(it = customerSort2.begin(); it!= customerSort2.end(); it++){
+			sort(it->second.begin(),it->second.end(),IDCheck);
+		}
+		for(it = customerSort3.begin(); it!= customerSort3.end(); it++){
+			sort(it->second.begin(),it->second.end(),IDCheck);
+		}
+		for(it = customerSort4.begin(); it!= customerSort4.end(); it++){
+			sort(it->second.begin(),it->second.end(),IDCheck);
+		}
+
+		// replace the values in the queues with the ones stored in the maps in the correct order
+		sub_queue_one.clear();
+		sub_queue_two.clear();
+		sub_queue_three.clear();
+		leaverbuster_queue.clear();
+		for(it = customerSort1.begin(); it!= customerSort1.end(); it++){
+			for(int i=0;i<it->second.size();i++){
+				Customer copy = it->second.at(i);
+				sub_queue_one.push_back(copy);
+			}
+		}
+		for(it = customerSort2.begin(); it!= customerSort2.end(); it++){
+			for(int i=0;i<it->second.size();i++){
+				Customer copy = it->second.at(i);
+				sub_queue_two.push_back(copy);
+			}
+		}
+		for(it = customerSort3.begin(); it!= customerSort3.end(); it++){
+			for(int i=0;i<it->second.size();i++){
+				Customer copy = it->second.at(i);
+				sub_queue_three.push_back(copy);
+			}
+		}
+		for(it = customerSort4.begin(); it!= customerSort4.end(); it++){
+			for(int i=0;i<it->second.size();i++){
+				Customer copy = it->second.at(i);
+				leaverbuster_queue.push_back(copy);
+			}
+		}
+	}
+
+	//debug function
+	void checkQueues(){
+		cout << "subq 1" << endl;
+		for(int i=0;i<sub_queue_one.size();i++){
+			cout << "customer id: " << sub_queue_one[i].custID << " priority: " << sub_queue_one[i].priority << " arrivalTime: " << sub_queue_one[i].arrivalTime << " runningTime: " << sub_queue_one[i].runningTime << endl;
+		}
+		cout << "subq 2" << endl;
+		for(int i=0;i<sub_queue_two.size();i++){
+			cout << "customer id: " << sub_queue_two[i].custID << " priority: " << sub_queue_two[i].priority << " arrivalTime: " << sub_queue_two[i].arrivalTime << " runningTime: " << sub_queue_two[i].runningTime << endl;
+		}
+		cout << "subq 3" << endl;
+		for(int i=0;i<sub_queue_three.size();i++){
+			cout << "customer id: " << sub_queue_three[i].custID << " priority: " << sub_queue_three[i].priority << " arrivalTime: " << sub_queue_three[i].arrivalTime << " runningTime: " << sub_queue_three[i].runningTime << endl;
+		}
+		cout << "queue 2" << endl;
+		for(int i=0;i<leaverbuster_queue.size();i++){
+			cout << "customer id: " << leaverbuster_queue[i].custID << " priority: " << leaverbuster_queue[i].priority << " arrivalTime: " << leaverbuster_queue[i].arrivalTime << " runningTime: " << leaverbuster_queue[i].runningTime << endl;
+		}
 	}
 
 
@@ -151,7 +244,6 @@ public:
 			cust.queue=3;
 			sub_queue_three.push_back(cust);
 		} else {
-			cust.queue=0;
 			leaverbuster_queue.push_back(cust);
 		}
 	}
@@ -253,8 +345,11 @@ public:
 			customer.tickets=StringToInt(str);
 			customerQueue.addCustomer(customer);
 		}
-		currentCustomer=customerQueue.getFrontCustomer();
-		cout << currentCustomer.tickets << endl;
+		customerQueue.checkQueues();
+		cout << "sort customers" << endl;
+		customerQueue.sortArrivals();
+		customerQueue.checkQueues();
+		// customerQueue.getIndex()
 
 
 		//At the end of each "tick" we need to call several functions for each customer.
