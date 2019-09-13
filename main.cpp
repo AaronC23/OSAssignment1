@@ -363,8 +363,7 @@ public:
 				}
 				str.erase(0, pos + delimiter.length());
 			}
-<<<<<<< HEAD
-			customer.tickets=StringToInt(str);
+			customer.ticketsRemaining=StringToInt(str);
 			// add customer to parsed customer map
 			parsedCustomers[customer.arrivalTime].push_back(customer);
 			// customerQueue.addCustomer(customer);
@@ -380,7 +379,7 @@ public:
 				for(int i=0;i<it->second.size();i++){
 					customerQueue.addCustomer(it->second.at(i));
 				}
-				customerQueue.sortArrivals();
+				// customerQueue.sortArrivals();
 				customerQueue.checkQueues();
 				it++;
 			}
@@ -392,24 +391,6 @@ public:
 		// cout << "move customer 9 from leaverbuster to subqueue 3" << endl;
 		// customerQueue.changeQueue(0,3,9);
 		// customerQueue.checkQueues();
-=======
-			customer.ticketsRemaining=StringToInt(str);
-			customerQueue.addCustomer(customer);
-		}
-		customerQueue.checkQueues();
-		cout << "sort customers" << endl;
-		customerQueue.sortArrivals();
-		customerQueue.checkQueues();
-		cout << "move customer 9 from leaverbuster to subqueue 3" << endl;
-		customerQueue.changeQueue(0,3,9);
-		customerQueue.checkQueues();
-
-
-		currentCustomer=customerQueue.getFrontCustomer();
-		currentCustomer->ticketQuota=currentCustomer->getTicketQuantum(currentCustomer->priority);
-		cout << "Current ticket quota is: " << currentCustomer->ticketQuota << endl;
-
->>>>>>> 034144e96927ec7edec0cd2d9ee39f321f15052a
 		// customerQueue.getIndex()
 
 
