@@ -67,7 +67,7 @@ public:
 	//Called when we are increasing a customers priority
 	//We then call promote to see if they need to be promoted.
 	int increasePriority(){
-		if(priority==1){
+		if(priority==1){	
 			return queue;
 		} else {
 			priority--;
@@ -193,7 +193,7 @@ public:
 		// add new arrivals that go to queue two
 		for(int i=0;i<arrivingCustomers.size();i++){
 			if(arrivingCustomers[i].priority > 3){
-				leaverbuster_queue.push_back(arrivingCustomers);
+				leaverbuster_queue.push_back(arrivingCustomers[i]);
 			}
 		}
 		promoted_customers.clear();
@@ -361,16 +361,6 @@ public:
 
 	void checkForPromotion(){
 		for (int i = 0; i < leaverbuster_queue.size(); i++){
-			if(leaverbuster_queue[i].waitCount%8==0){
-				int temp=leaverbuster_queue[i].increasePriority();
-				if(temp!=leaverbuster_queue[i].queue){
-					// add to the promotion vector and delete from current one
-					promoted_customers.push_back(leaverbuster_queue[i]);
-					leaverbuster_queue.erase(leaverbuster_queue.begin()+i);
-					i--;
-					// changeQueue(leaverbuster_queue[i].queue,temp,leaverbuster_queue[i].custID);
-				}
-			}
 		}
 	}
 
@@ -399,7 +389,16 @@ public:
 		for(int i=0;i<leaverbuster_queue.size();i++){
 			leaverbuster_queue[i].waitCount++;
 			leaverbuster_queue[i].waitingTime++;
-			leaverbuster_queue[i].checkForPromotion();
+			if(leaverbuster_queue[i].waitCount%8==0){
+				int temp=leaverbuster_queue[i].increasePriority();
+				if(temp!=leaverbuster_queue[i].queue){
+					// add to the promotion vector and delete from current one
+					promoted_customers.push_back(leaverbuster_queue[i]);
+					leaverbuster_queue.erase(leaverbuster_queue.begin()+i);
+					i--;
+					// changeQueue(leaverbuster_queue[i].queue,temp,leaverbuster_queue[i].custID);
+				}
+			}
 		}
 	}
 
@@ -491,15 +490,15 @@ public:
 			currentCustomer->process(tick);
 
 			if(currentCustomer->queue!=0){
-				if(currentCustomer->getTicketQuantum()!=0 && currentCustomer->ticketsProcessed%5==0){
+				if(currentCustomer->ticketQuota!=0 && currentCustomer->ticketsProcessed%5==0){
 					currentCustomer->ticketQuota--;
 					currentCustomer->ticketsRemaining--;
 				}
 			} else if (currentCustomer->queue==0){
-				customerQueue.checkForArrivals();
+				customerQueue.checkForArrivals(arrivingCustomers);
 			}
 
-			customerQueue.updateCustomers(currentCustomer.custID);
+			customerQueue.updateCustomers(currentCustomer->custID);
 			tick++;
 		}
 
