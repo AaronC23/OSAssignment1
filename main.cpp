@@ -67,7 +67,7 @@ public:
 	//Called when we are increasing a customers priority
 	//We then call promote to see if they need to be promoted.
 	int increasePriority(){
-		if(priority==1){	
+		if(priority==1){
 			return queue;
 		} else {
 			priority--;
@@ -487,7 +487,7 @@ public:
 				it++;
 			}
 
-			customerQueue.checkForArrivals(arrivingCustomers);
+			bool arrivedInQueueOne = customerQueue.checkForArrivals(arrivingCustomers);
 
 			//NEED A WAY TO CALL getFrontCustomer() ONCE ONLY
 			currentCustomer = customerQueue.getFrontCustomer();
