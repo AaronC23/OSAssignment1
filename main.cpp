@@ -26,11 +26,13 @@ public:
 		int runningTime; //Duration of buying tickets
 		int waitingTime; //Duration of waiting
 		int terminationTime; //Time when process bought all tickets
+		int firstProcessTime;
 		bool finishedProcess;
 	Customer(){
 		runningTime = 0;
 		terminationTime = -1;
 		waitingTime = -1;
+		firstProcessTime = -1;
 		ticketsProcessed = 0;
 		finishedProcess = false;
 	}
@@ -41,7 +43,10 @@ public:
 
 	//Called when processing a customer.
 	//If we have had 3 currentRuns, decrease priority and check if we need to demote!
-	void process(){
+	void process(int currentTime){
+		if(firstProcessTime == -1){
+			firstProcessTime = currentTime;
+		}
 		currentRuns++;
 		if(currentRuns == 3){
 			currentRuns = 0;
@@ -417,6 +422,7 @@ public:
 	int main(int argc, char *argv[]){
 		// stores all the customers that will be added to the queue
 		map<int, vector<Customer> > parsedCustomers;
+		vector<Customer> completedCustomers;
 
 		CustomerQueue customerQueue;
 		Customer* currentCustomer;
@@ -482,7 +488,7 @@ public:
 
 			//NEED A WAY TO CALL getFrontCustomer() ONCE ONLY
 			currentCustomer = customerQueue.getFrontCustomer();
-			currentCustomer->process();
+			currentCustomer->process(tick);
 
 			if(currentCustomer->queue!=0){
 				if(currentCustomer->getTicketQuantum()!=0 && currentCustomer->ticketsProcessed%5==0){
@@ -497,10 +503,12 @@ public:
 			tick++;
 		}
 
+		sort(completedCustomers.begin(),it->completedCustomers.end(),IDCheck);
+
 		// output results
 		cout << "name arrival end ready running waiting";
 		for(int i=0;i<totalCustomers;i++){
-			cout << "a" << i << endl;
+			cout << "a" << completedCustomers[i].custID << " " << completedCustomers[i].arrivalTime << " " << completedCustomers[i].terminationTime << " " << completedCustomers[i].firstProcessTime << " " << completedCustomers[i].runningTime << " " << completedCustomers[i].waitingTime << endl;
 		}
 
 		return 0;
