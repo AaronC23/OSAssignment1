@@ -316,6 +316,12 @@ public:
 		}
 	}
 
+	void removeFrontCustomer(){
+		finishedCustomers++;
+		vector<Customer> * queueToRemove = getQueue(getFrontCustomer->queue);
+		queueToRemove->erase(queueToRemove->begin());
+	}
+
 	//Queue 1 functions
 
 	//Queue 2 functions
@@ -361,6 +367,11 @@ public:
 					customer.arrivalTime=StringToInt(token);
 				} else if (counter==2){
 					customer.priority=StringToInt(token);
+					if(token > 3) {
+						customer.queue = 0
+					} else {
+						customer.queue = customer.priority
+					}
 				} else if (counter==3){
 					customer.age=StringToInt(token);
 				}
@@ -392,6 +403,9 @@ public:
 			}
 			tick++;
 		}
+
+		// output results
+		cout << "name arrival end ready running waiting";
 
 		return 0;
 	}
