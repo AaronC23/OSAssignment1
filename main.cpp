@@ -25,10 +25,12 @@ public:
 		int runningTime; //Duration of buying tickets
 		int waitingTime; //Duration of waiting
 		int terminationTime; //Time when process bought all tickets
+		bool finishedProcess;
 	Customer(){
 		runningTime = 0;
 		terminationTime = -1;
 		waitingTime = -1;
+		finishedProcess = false
 	}
 
 	int getCustID(){
@@ -113,9 +115,10 @@ public:
 	vector<Customer> sub_queue_one;
 	vector<Customer> sub_queue_two;
 	vector<Customer> sub_queue_three;
+	int finishedCustomers;
 
 	CustomerQueue(){
-
+		finishedCustomers = 500;
 	}
 
 	//Public functions
@@ -238,7 +241,6 @@ public:
 		}
 	}
 
-
 	//
 	void addCustomer(Customer cust){
 		if(cust.priority==1){
@@ -335,6 +337,7 @@ public:
 
 		CustomerQueue customerQueue;
 		Customer* currentCustomer;
+		int totalCustomers = 0;
 		int counter=-1;
 		string str;
 		string token;
@@ -367,10 +370,14 @@ public:
 			// add customer to parsed customer map
 			parsedCustomers[customer.arrivalTime].push_back(customer);
 			// customerQueue.addCustomer(customer);
+			totalCustomers++;
 		}
 
 		map<int, vector<Customer> >::iterator it = parsedCustomers.begin();
-		for(int tick = 0; tick<500; tick++) {
+		// process the queue
+		int tick = 0;
+		// while(customerQueue.finishedCustomers < totalCustomers)
+		while (tick < 500)
 			if(it->first == tick) {
 				// add each customer at this instance of time to a queue
 				cout << "adding " << it->second.size() << " customers to the queue at time " << tick << endl;
@@ -383,19 +390,8 @@ public:
 				customerQueue.checkQueues();
 				it++;
 			}
+			tick++;
 		}
-		// customerQueue.checkQueues();
-		// cout << "sort customers" << endl;
-		// customerQueue.sortArrivals();
-		// customerQueue.checkQueues();
-		// cout << "move customer 9 from leaverbuster to subqueue 3" << endl;
-		// customerQueue.changeQueue(0,3,9);
-		// customerQueue.checkQueues();
-		// customerQueue.getIndex()
-
-
-		//At the end of each "tick" we need to call several functions for each customer.
-		//
 
 		return 0;
 	}
