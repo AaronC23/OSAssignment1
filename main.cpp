@@ -12,11 +12,12 @@ using namespace std;
 
 class Customer{
 public:
-		int custID;	
+		int custID;
 		int arrivalTime;
 		int priority;
 		int age;
 		int ticketQuota;
+		int ticketsProcessed;
 		int ticketsRemaining;
 		int queue;
 		int waitCount;
@@ -30,6 +31,7 @@ public:
 		runningTime = 0;
 		terminationTime = -1;
 		waitingTime = -1;
+		ticketsProcessed = 0;
 		finishedProcess = false;
 	}
 
@@ -123,10 +125,13 @@ public:
 	vector<Customer> sub_queue_one;
 	vector<Customer> sub_queue_two;
 	vector<Customer> sub_queue_three;
+	vector<Customer> promoted_customers;
+	Customer demoted_customer;
+	Customer quantum_customer;
 	int finishedCustomers;
 
 	CustomerQueue(){
-		finishedCustomers = 500;
+		finishedCustomers = 0;
 	}
 
 	//Public functions
@@ -159,6 +164,34 @@ public:
 				return i;
 			}
 		}
+	}
+
+	// check for new arrivals, and promotions and demotions to the queues
+	void checkForArrivals(vector<Customer> arrivingCustomers){
+		// add new arrivals that go to queue one
+		for(int i=0;i<arrivingCustomers.size();i++){
+			if(arrivingCustomers[i].priority <= 3) {
+				vector<Customer> * queueToAdd = getQueue(arrivingCustomers[i].priority);
+				queueToAdd->push_back(arrivingCustomers[i]);
+			}
+		}
+		// add completed time weight customer
+		if(quantum_customer.custID != -1){
+			vector<Customer> * queueToAdd = getQueue(quantum_customer.priority);
+			queueToAdd->push_back(quantum_customer);
+			quantum_customer.custID = -1;
+		}
+		// add promoted customers to sub_queue_three
+		for(int i=0;i<promoted_customers.size();i++){
+			sub_queue_three.push_back(promoted_customers[i]);
+		}
+		// add new arrivals that go to queue two
+		for(int i=0;i<arrivingCustomers.size();i++){
+			if(arrivingCustomers[i].priority > 3){
+				leaverbuster_queue.push_back(arrivingCustomers);
+			}
+		}
+		promoted_customers.clear();
 	}
 
 	//Here you are John
@@ -326,7 +359,11 @@ public:
 			if(leaverbuster_queue[i].waitCount%8==0){
 				int temp=leaverbuster_queue[i].increasePriority();
 				if(temp!=leaverbuster_queue[i].queue){
-					changeQueue(leaverbuster_queue[i].queue,temp,leaverbuster_queue[i].custID);
+					// add to the promotion vector and delete from current one
+					promoted_customers.push_back(leaverbuster_queue[i]);
+					leaverbuster_queue.erase(leaverbuster_queue.begin()+i);
+					i--;
+					// changeQueue(leaverbuster_queue[i].queue,temp,leaverbuster_queue[i].custID);
 				}
 			}
 		}
@@ -339,18 +376,26 @@ public:
 	}
 
 	//Updates each customers variables and checks for promotions/demotions
-	//NEED TO FIX THIS FUNCTION TO LOOP THROUGH EACH QUEUE
 	void updateCustomers(int processID){
 		Customer* customerUpdate;
-		// for (int i = 0; i < allCustomers.size(); i++){
-		// 	if(customerUpdate->custID!=processID){
-		// 		customerUpdate=allCustomers.at(i);
-		// 		customerUpdate->waitCount++;
-		// 		customerUpdate->waitingTime++;
-		// 		customerUpdate->checkForPromotion();
-		// 		customerUpdate->checkForDemotion();
-		// 	}
-		// }
+		// loop through each queue
+		for(int i=0;i<sub_queue_one.size();i++){
+			sub_queue_one[i].waitCount++;
+			sub_queue_one[i].waitingTime++;
+		}
+		for(int i=0;i<sub_queue_two.size();i++){
+			sub_queue_two[i].waitCount++;
+			sub_queue_two[i].waitingTime++;
+		}
+		for(int i=0;i<sub_queue_three.size();i++){
+			sub_queue_three[i].waitCount++;
+			sub_queue_three[i].waitingTime++;
+		}
+		for(int i=0;i<leaverbuster_queue.size();i++){
+			leaverbuster_queue[i].waitCount++;
+			leaverbuster_queue[i].waitingTime++;
+			leaverbuster_queue[i].checkForPromotion();
+		}
 	}
 
 
@@ -422,31 +467,31 @@ public:
 		int ticket_processed = 0;
 		// while(customerQueue.finishedCustomers < totalCustomers)
 		while (tick < 500){
+			vector<Customer> arrivingCustomers;
+			// sort the list of arriving customers
 			if(it->first == tick) {
 				// add each customer at this instance of time to a queue
 				cout << "adding " << it->second.size() << " customers to the queue at time " << tick << endl;
 				// sort it based on ID already, they wont be added to the same queue anyway
 				sort(it->second.begin(),it->second.end(),IDCheck);
-				for(int i=0;i<it->second.size();i++){
-					customerQueue.addCustomer(it->second.at(i));
-				}
-				// customerQueue.sortArrivals();
-				customerQueue.checkQueues();
+				arrivingCustomers = it->second;
 				it++;
 			}
 
+			customerQueue.checkForArrivals(arrivingCustomers);
+
+			//NEED A WAY TO CALL getFrontCustomer() ONCE ONLY
+			currentCustomer = customerQueue.getFrontCustomer();
+			currentCustomer->process();
+
 			if(currentCustomer->queue!=0){
-				if(currentCustomer->ticket_quantum!=0 && currentCustomer->ticket_processed%5==0){
-					ticketQuota--;
-					ticketsRemaining--;
+				if(currentCustomer->getTicketQuantum()!=0 && currentCustomer->ticketsProcessed%5==0){
+					currentCustomer->ticketQuota--;
+					currentCustomer->ticketsRemaining--;
 				}
 			} else if (currentCustomer->queue==0){
 				customerQueue.checkForArrivals();
 			}
-
-			//NEED A WAY TO CALL getFrontCustomer() ONCE ONLY
-			currentCustomer = getFrontCustomer();
-			currentCustomer->process();
 
 			customerQueue.updateCustomers(currentCustomer.custID);
 			tick++;
