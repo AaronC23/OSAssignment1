@@ -12,7 +12,7 @@ using namespace std;
 
 class Customer{
 public:
-		int custID;
+		int custID;	
 		int arrivalTime;
 		int priority;
 		int age;
@@ -30,7 +30,7 @@ public:
 		runningTime = 0;
 		terminationTime = -1;
 		waitingTime = -1;
-		finishedProcess = false
+		finishedProcess = false;
 	}
 
 	int getCustID(){
@@ -47,14 +47,24 @@ public:
 		}
 	}
 
+	int getTicketQuantum(int prio){
+		int temp = (8-prio)*10;
+		return temp/5;
+	}
+
+	void newRun(){
+		waitCount=0;
+		ticketQuota=getTicketQuantum(priority);
+	}
+
 	//Called when we are increasing a customers priority
 	//We then call promote to see if they need to be promoted.
-	void increasePriority(){
+	int increasePriority(){
 		if(priority==1){
-			return;
+			return queue;
 		} else {
 			priority--;
-			promote(queue);
+			return promote(queue);
 		}
 	}
 
@@ -63,6 +73,7 @@ public:
 	//if(demote(cust.queue)!=cust.queue)
 	//{
 	//	swapQueue(cust.queue,demote(cust.queue));
+	//	cust.queue=demote(cust.queue);
 	//}
 	int demote(int queueNum){
 		if(queueNum==1 && priority>1){
@@ -83,6 +94,7 @@ public:
 	//if(promote(cust.queue)!=cust.queue)
 	//{
 	//	swapQueue(cust.queue,promote(cust.queue));
+	//	cust.queue=promote(cust.queue);
 	//}
 
 	int promote(int queueNum){
@@ -97,10 +109,6 @@ public:
 		}
 	}
 
-	int getTicketQuantum(int prio){
-		int temp = (8-prio)*10;
-		return temp/5;
-	}
 
 };
 
@@ -280,6 +288,7 @@ public:
 				Customer move = q1->at(i);
 				q1->erase(q1->begin()+i);
 				q2->push_back(move);
+				move.queue=queue2;
 				break;
 			}
 		}
@@ -295,32 +304,55 @@ public:
 	Customer* getFrontCustomer(){
 		if(sub_queue_one.size()==0){
 			if(sub_queue_two.size()!=0){
+				sub_queue_two[0].newRun();
 				return &sub_queue_two[0];
 			} else if(sub_queue_two.size()==0){
 				if(sub_queue_three.size()!=0){
+					sub_queue_three[0].newRun();
 					return &sub_queue_three[0];
 				} else if(sub_queue_three.size()==0){
+					leaverbuster_queue[0].newRun();
 					return &leaverbuster_queue[0];
 				}
 			}
 		} else if (sub_queue_one.size()!=0){
+			sub_queue_one[0].newRun();
 			return &sub_queue_one[0];
 		}
 	}
 
-	void checkForLongWait(){
+	void checkForPromotion(){
 		for (int i = 0; i < leaverbuster_queue.size(); i++){
 			if(leaverbuster_queue[i].waitCount%8==0){
-				leaverbuster_queue[i].increasePriority();
+				int temp=leaverbuster_queue[i].increasePriority();
+				if(temp!=leaverbuster_queue[i].queue){
+					changeQueue(leaverbuster_queue[i].queue,temp,leaverbuster_queue[i].custID);
+				}
 			}
 		}
 	}
 
 	void removeFrontCustomer(){
 		finishedCustomers++;
-		vector<Customer> * queueToRemove = getQueue(getFrontCustomer->queue);
+		vector<Customer> * queueToRemove = getQueue(getFrontCustomer()->queue);
 		queueToRemove->erase(queueToRemove->begin());
 	}
+
+	//Updates each customers variables and checks for promotions/demotions
+	//NEED TO FIX THIS FUNCTION TO LOOP THROUGH EACH QUEUE
+	void updateCustomers(int processID){
+		Customer* customerUpdate;
+		// for (int i = 0; i < allCustomers.size(); i++){
+		// 	if(customerUpdate->custID!=processID){
+		// 		customerUpdate=allCustomers.at(i);
+		// 		customerUpdate->waitCount++;
+		// 		customerUpdate->waitingTime++;
+		// 		customerUpdate->checkForPromotion();
+		// 		customerUpdate->checkForDemotion();
+		// 	}
+		// }
+	}
+
 
 	//Queue 1 functions
 
@@ -367,10 +399,10 @@ public:
 					customer.arrivalTime=StringToInt(token);
 				} else if (counter==2){
 					customer.priority=StringToInt(token);
-					if(token > 3) {
-						customer.queue = 0
+					if(customer.priority > 3) {
+						customer.queue = 0;
 					} else {
-						customer.queue = customer.priority
+						customer.queue = customer.priority;
 					}
 				} else if (counter==3){
 					customer.age=StringToInt(token);
@@ -387,8 +419,9 @@ public:
 		map<int, vector<Customer> >::iterator it = parsedCustomers.begin();
 		// process the queue
 		int tick = 0;
+		int ticket_processed = 0;
 		// while(customerQueue.finishedCustomers < totalCustomers)
-		while (tick < 500)
+		while (tick < 500){
 			if(it->first == tick) {
 				// add each customer at this instance of time to a queue
 				cout << "adding " << it->second.size() << " customers to the queue at time " << tick << endl;
@@ -401,6 +434,21 @@ public:
 				customerQueue.checkQueues();
 				it++;
 			}
+
+			if(currentCustomer->queue!=0){
+				if(currentCustomer->ticket_quantum!=0 && currentCustomer->ticket_processed%5==0){
+					ticketQuota--;
+					ticketsRemaining--;
+				}
+			} else if (currentCustomer->queue==0){
+				customerQueue.checkForArrivals();
+			}
+
+			//NEED A WAY TO CALL getFrontCustomer() ONCE ONLY
+			currentCustomer = getFrontCustomer();
+			currentCustomer->process();
+
+			customerQueue.updateCustomers(currentCustomer.custID);
 			tick++;
 		}
 
