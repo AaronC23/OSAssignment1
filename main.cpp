@@ -406,6 +406,9 @@ public:
 
 		// output results
 		cout << "name arrival end ready running waiting";
+		for(int i=0;i<totalCustomers;i++){
+			cout << "a" << i << endl;
+		}
 
 		return 0;
 	}
