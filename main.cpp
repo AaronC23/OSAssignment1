@@ -504,21 +504,17 @@ public:
 			bool arrivedInQueueOne = customerQueue.checkForArrivals(arrivingCustomers);
 
 			if(newCustomer){
-				if(completedCustomers.size()==arrivingCustomers.size()){
-					// cout << "We done" << endl;
-				} else {
-					currentCustomer = customerQueue.getFrontCustomer();
-					cout << "Getting a new customer!" << endl;
-					currentCustomer->newRun();
-					currentCustomer->process(tick);
-					newCustomer=false;
-					fixed_quota=20;
-				}
+				currentCustomer = customerQueue.getFrontCustomer();
+				// cout << "Getting a new customer!" << endl;
+				currentCustomer->newRun();
+				currentCustomer->process(tick);
+				newCustomer=false;
+				fixed_quota=20;
 			}
 
 			if(currentCustomer->queue!=0){
 				if (currentCustomer->ticketsRemaining==0){
-					cout << "Pushing back" << endl;
+					// cout << "Pushing back" << endl;
 					completedCustomers.push_back(*currentCustomer);
 					customerQueue.quantum_customer=*currentCustomer;
 					customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
