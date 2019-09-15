@@ -8,6 +8,7 @@
 #include <set>
 #include <algorithm>
 #include <functional>
+#include <cmath>
 using namespace std;
 class Customer{
 public:
@@ -43,6 +44,10 @@ public:
 
 	int getCustID(){
 		return custID;
+	}
+
+	void fixPriority(){
+		priority -= floor(waitCount/8);
 	}
 
 	//Called when processing a customer.
@@ -435,7 +440,7 @@ public:
 	void deleteFromQueue(int custID, vector<Customer> * queueList){
 	    for(int i=0;i<queueList->size();i++){
 	        if(queueList->at(i).custID == custID){
-						// cout << "deleting " << custID << " from queue" << endl;
+						cout << "deleting " << custID << " from queue" << endl;
             queueList->erase(queueList->begin()+i);
             break;
 	        }
@@ -473,7 +478,7 @@ public:
 				leaverbuster_queue[i].fixQueue();
 				if(currentQueue!=leaverbuster_queue[i].queue){
 					// add to the promotion vector and delete from current one
-					// cout << "customer " << leaverbuster_queue[i].custID << " has been promoted" << endl;
+					cout << "customer " << leaverbuster_queue[i].custID << " has been promoted" << endl;
 					promoted_customers.push_back(leaverbuster_queue[i]);
 					leaverbuster_queue.erase(leaverbuster_queue.begin()+i);
 					i--;
@@ -522,9 +527,6 @@ public:
 					}
 					customer.custID=StringToInt(id);
 				} else if (counter==1){
-					if(StringToInt(token)>250){
-						cout << "Big number?" << endl;
-					}
 					customer.arrivalTime=StringToInt(token);
 				} else if (counter==2){
 					customer.priority=StringToInt(token);
@@ -534,19 +536,22 @@ public:
 						customer.queue = customer.priority;
 					}
 				} else if (counter==3){
-					customer.age=StringToInt(token);
+					customer.waitCount=StringToInt(token);
 				}
 				str.erase(0, pos + delimiter.length());
 			}
+			cout << "parsed customer priority is " << customer.priority << endl;
 			customer.ticketsRemaining=StringToInt(str);
+			customer.fixPriority();
 			// add customer to parsed customer map
 			parsedCustomers[customer.arrivalTime].push_back(customer);
-			// cout << "adding customer " << customer.custID << " to map with time " << customer.arrivalTime << endl;
+			cout << "adding customer " << customer.custID << " p: " << customer.priority << " to map with time " << customer.arrivalTime << endl;
+			cout << "a" << customer.custID << " " << customer.arrivalTime << " " << customer.priority << " " << customer.age << " " << customer.ticketsRemaining << endl;
 			// customerQueue.addCustomer(customer);
 			totalCustomers++;
 		}
 
-		// cout << "total customers is " << totalCustomers << endl;
+		cout << "total customers is " << totalCustomers << endl;
 
 		customerQueue.checkQueues();
 
@@ -559,7 +564,7 @@ public:
 			// sort the list of arriving customers
 			if(it->first == tick && it != parsedCustomers.end()) {
 				// add each customer at this instance of time to a queue
-				// cout << "adding " << it->second.size() << " customers to the queue at time " << tick << endl;
+				cout << "adding " << it->second.size() << " customers to the queue at time " << tick << endl;
 				// sort it based on ID already, they wont be added to the same queue anyway
 				sort(it->second.begin(),it->second.end(),IDCheck);
 				arrivingCustomers = it->second;
@@ -573,13 +578,13 @@ public:
 			bool arrivedInQueueOne = customerQueue.checkForArrivals(arrivingCustomers);
 			if(customerQueue.customersLeft()==0){
 				tick++;
-				// cout << "----------------------------------------" << endl;
+				cout << "----------------------------------------" << endl;
 				continue;
 			}
 			// get the customer at the front of the queue if the queue is queue two
 			if((customerQueue.getFrontCustomer()->priority <= 3 && currentCustomer->queue == 0) || newCustomer){
 				int newCustID = customerQueue.getFrontCustomer()->custID;
-				// cout << "getting customer " << newCustID << endl;
+				cout << "getting customer " << newCustID << endl;
 				// interrupted customer counts as a run
 				if (customerQueue.getFrontCustomer()->priority <= 3 && currentCustomer->queue == 0) {
 					customerQueue.finishRun(newCustID);
@@ -592,8 +597,8 @@ public:
 					currentCustomer->ticketQuota=20;
 				}
 			}
-			// cout << "we are processing customer " << currentCustomer->custID << " at tick " << tick << endl;
-			// cout << "he has " << currentCustomer->ticketsRemaining << " tickets remaining and a quota of " << currentCustomer->ticketQuota << endl;
+			cout << "we are processing customer " << currentCustomer->custID << " at tick " << tick << endl;
+			cout << "he has " << currentCustomer->ticketsRemaining << " tickets remaining and a quota of " << currentCustomer->ticketQuota << endl;
 			currentCustomer->process(tick);
 			// customer finished completely or customer finished their quota run
 			if(currentCustomer->ticketsRemaining==0){
@@ -603,7 +608,7 @@ public:
 				completedCustomers.push_back(*currentCustomer);
 				customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
 			} else if(currentCustomer->ticketQuota==0){
-				// cout << "customer " << currentCustomer->custID << " finished its quota for this run" << endl;
+				cout << "customer " << currentCustomer->custID << " finished its quota for this run" << endl;
 				customerQueue.finishRun(currentCustomer->custID);
 				newCustomer = true;
 				vector<Customer> * queueToDelFrom = customerQueue.getQueue(currentCustomer->queue);
@@ -619,15 +624,15 @@ public:
 			tick++;
 		}
 
-		// cout << "completed customers size: " << completedCustomers.size() << endl;
+		cout << "completed customers size: " << completedCustomers.size() << endl;
 
 		sort(completedCustomers.begin(),completedCustomers.end(),TerminationTimeCheck);
 		//output results
 		cout << "name arrival end ready running waiting" << endl;
 		for(int i=0;i<totalCustomers;i++){
 			if(completedCustomers[i].custID<1000){
-			completedCustomers[i].waitingTime=(completedCustomers[i].terminationTime-completedCustomers[i].firstProcessTime)-completedCustomers[i].runningTime;
-			cout << "a" << completedCustomers[i].custID << " " << completedCustomers[i].arrivalTime << " " << completedCustomers[i].terminationTime << " " << completedCustomers[i].firstProcessTime << " " << completedCustomers[i].runningTime << " " << completedCustomers[i].waitingTime << endl;
+				completedCustomers[i].waitingTime=(completedCustomers[i].terminationTime-completedCustomers[i].firstProcessTime)-completedCustomers[i].runningTime;
+				cout << "a" << completedCustomers[i].custID << " " << completedCustomers[i].arrivalTime << " " << completedCustomers[i].terminationTime << " " << completedCustomers[i].firstProcessTime << " " << completedCustomers[i].runningTime << " " << completedCustomers[i].waitingTime << endl;
 			}
 		}
 
