@@ -559,7 +559,7 @@ public:
 			// sort the list of arriving customers
 			if(it->first == tick && it != parsedCustomers.end()) {
 				// add each customer at this instance of time to a queue
-				cout << "adding " << it->second.size() << " customers to the queue at time " << tick << endl;
+				// cout << "adding " << it->second.size() << " customers to the queue at time " << tick << endl;
 				// sort it based on ID already, they wont be added to the same queue anyway
 				sort(it->second.begin(),it->second.end(),IDCheck);
 				arrivingCustomers = it->second;
@@ -573,13 +573,13 @@ public:
 			bool arrivedInQueueOne = customerQueue.checkForArrivals(arrivingCustomers);
 			if(customerQueue.customersLeft()==0){
 				tick++;
-				cout << "----------------------------------------" << endl;
+				// cout << "----------------------------------------" << endl;
 				continue;
 			}
 			// get the customer at the front of the queue if the queue is queue two
 			if((customerQueue.getFrontCustomer()->priority <= 3 && currentCustomer->queue == 0) || newCustomer){
 				int newCustID = customerQueue.getFrontCustomer()->custID;
-				cout << "getting customer " << newCustID << endl;
+				// cout << "getting customer " << newCustID << endl;
 				// interrupted customer counts as a run
 				if (customerQueue.getFrontCustomer()->priority <= 3 && currentCustomer->queue == 0) {
 					customerQueue.finishRun(newCustID);
@@ -592,8 +592,8 @@ public:
 					currentCustomer->ticketQuota=20;
 				}
 			}
-			cout << "we are processing customer " << currentCustomer->custID << " at tick " << tick << endl;
-			cout << "he has " << currentCustomer->ticketsRemaining << " tickets remaining and a quota of " << currentCustomer->ticketQuota << endl;
+			// cout << "we are processing customer " << currentCustomer->custID << " at tick " << tick << endl;
+			// cout << "he has " << currentCustomer->ticketsRemaining << " tickets remaining and a quota of " << currentCustomer->ticketQuota << endl;
 			currentCustomer->process(tick);
 			// customer finished completely or customer finished their quota run
 			if(currentCustomer->ticketsRemaining==0){
@@ -603,7 +603,7 @@ public:
 				completedCustomers.push_back(*currentCustomer);
 				customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
 			} else if(currentCustomer->ticketQuota==0){
-				cout << "customer " << currentCustomer->custID << " finished its quota for this run" << endl;
+				// cout << "customer " << currentCustomer->custID << " finished its quota for this run" << endl;
 				customerQueue.finishRun(currentCustomer->custID);
 				newCustomer = true;
 				vector<Customer> * queueToDelFrom = customerQueue.getQueue(currentCustomer->queue);
@@ -615,74 +615,11 @@ public:
 			}
 			// make everyone else wait
 			customerQueue.updateCustomers(currentCustomer->custID);
-			cout << "total runs so far is " << customerQueue.totalRuns << endl;
-			// if(newCustomer){
-			// 	currentCustomer = customerQueue.getFrontCustomer();
-			// 	cout << "New customer has ID: " << currentCustomer->custID << endl;
-			// 	if(currentCustomer->queue==0){
-			// 		currentCustomer->newRun();currentCustomer->ticketQuota=20;
-			// 	}
-			// 	currentCustomer->process(tick);
-			// 	newCustomer=false;
-			// }
-			//
-			// if(currentCustomer->queue!=0){
-			// 	if(currentCustomer->ticketQuota!=0 && ticket_processed%5==0){
-			// 		currentCustomer->ticketQuota--;
-			// 		currentCustomer->ticketsRemaining--;
-			// 		if(currentCustomer->ticketsRemaining==0){
-			// 			cout << "About to push back " << endl;
-			// 			currentCustomer->terminationTime = tick;
-			// 			completedCustomers.push_back(*currentCustomer);
-			// 			customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
-			// 			newCustomer=true;
-			// 		} else if(currentCustomer->ticketQuota==0){
-			// 			currentCustomer->waitCount=0;
-			// 			if((currentCustomer->checkForDemotion(currentCustomer->queue)!=currentCustomer->queue)){
-			// 				customerQueue.quantum_customer=*currentCustomer;
-			// 				customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
-			// 				newCustomer=true;
-			// 			}
-			// 		}
-			// 		cout << "Current customer ticketQuota is: " << currentCustomer->ticketQuota << endl;
-			// 		cout << "Current customer ticketremaining is: " << currentCustomer->ticketsRemaining << endl;
-			// 		cout << "------------------------------------" << endl;
-			// 	} else if (currentCustomer->ticketQuota==0){
-			// 		currentCustomer->waitCount=0;
-			// 		if((currentCustomer->checkForDemotion(currentCustomer->queue)!=currentCustomer->queue)){
-			// 			customerQueue.quantum_customer=*currentCustomer;
-			// 			customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
-			// 			newCustomer=true;
-			// 		}
-			// 		newCustomer=true;
-			// 	}
-			// } else if (currentCustomer->queue==0){
-			// 	if(arrivedInQueueOne){
-			// 		currentCustomer->waitCount++;
-			// 		newCustomer=true;
-			// 	} else if (currentCustomer->ticketQuota!=0 && ticket_processed%5==0){
-			// 		currentCustomer->ticketsRemaining--;
-			// 		currentCustomer->ticketQuota--;
-			// 		if(currentCustomer->ticketsRemaining==0){
-			// 			cout << "About to push back " << endl;
-			// 			completedCustomers.push_back(*currentCustomer);
-			// 			customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
-			// 			newCustomer=true;
-			// 		} else if(currentCustomer->ticketQuota==0){
-			// 			currentCustomer->waitCount=0;
-			// 			newCustomer=true;
-			// 		}
-			// 	} else if (currentCustomer->ticketQuota==0){
-			// 		currentCustomer->waitCount=0;
-			// 		newCustomer=true;
-			// 	}
-			// }
-			//
-			// customerQueue.updateCustomers(currentCustomer->custID);
+			// cout << "total runs so far is " << customerQueue.totalRuns << endl;
 			tick++;
 		}
 
-		cout << "completed customers size: " << completedCustomers.size() << endl;
+		// cout << "completed customers size: " << completedCustomers.size() << endl;
 
 		sort(completedCustomers.begin(),completedCustomers.end(),TerminationTimeCheck);
 		//output results
