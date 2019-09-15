@@ -48,6 +48,7 @@ public:
 
 	void fixPriority(){
 		priority -= floor(waitCount/8);
+		waitCount = 0;
 	}
 
 	//Called when processing a customer.
@@ -475,6 +476,7 @@ public:
 			if(leaverbuster_queue[i].waitCount%8==0){
 				int currentQueue = leaverbuster_queue[i].queue;
 				leaverbuster_queue[i].priority--;
+				leaverbuster_queue[i].waitCount=0;
 				leaverbuster_queue[i].fixQueue();
 				if(currentQueue!=leaverbuster_queue[i].queue){
 					// add to the promotion vector and delete from current one
