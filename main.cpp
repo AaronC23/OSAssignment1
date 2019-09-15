@@ -481,11 +481,6 @@ public:
 			}
 		}
 	}
-
-	//Queue 1 functions
-
-	//Queue 2 functions
-
 };
 
 
@@ -527,6 +522,9 @@ public:
 					}
 					customer.custID=StringToInt(id);
 				} else if (counter==1){
+					if(StringToInt(token)>250){
+						cout << "Big number?" << endl;
+					}
 					customer.arrivalTime=StringToInt(token);
 				} else if (counter==2){
 					customer.priority=StringToInt(token);
@@ -555,6 +553,7 @@ public:
 		map<int, vector<Customer> >::iterator it = parsedCustomers.begin();
 		// process the queue
 		int tick = 0;
+		int check = 0;
 		while(completedCustomers.size() < totalCustomers){
 			vector<Customer> arrivingCustomers;
 			// sort the list of arriving customers
@@ -572,7 +571,11 @@ public:
 			}
 
 			bool arrivedInQueueOne = customerQueue.checkForArrivals(arrivingCustomers);
-
+			if(customerQueue.customersLeft()==0){
+				tick++;
+				cout << "----------------------------------------" << endl;
+				continue;
+			}
 			// get the customer at the front of the queue if the queue is queue two
 			if((customerQueue.getFrontCustomer()->priority <= 3 && currentCustomer->queue == 0) || newCustomer){
 				int newCustID = customerQueue.getFrontCustomer()->custID;
@@ -682,12 +685,15 @@ public:
 		cout << "completed customers size: " << completedCustomers.size() << endl;
 
 		sort(completedCustomers.begin(),completedCustomers.end(),TerminationTimeCheck);
-
 		//output results
 		cout << "name arrival end ready running waiting" << endl;
 		for(int i=0;i<totalCustomers;i++){
-			cout << "a" << completedCustomers[i].custID << " " << completedCustomers[i].arrivalTime << " " << completedCustomers[i].terminationTime << " " << completedCustomers[i].firstProcessTime << " " << completedCustomers[i].runningTime << " " << completedCustomers[i].waitingTime << endl;
+			if(completedCustomers[i].custID<1000){
+				completedCustomers[i].waitingTime=(completedCustomers[i].terminationTime-completedCustomers[i].firstProcessTime)-completedCustomers[i].runningTime;
+				cout << "a" << completedCustomers[i].custID << " " << completedCustomers[i].arrivalTime << " " << completedCustomers[i].terminationTime << " " << completedCustomers[i].firstProcessTime << " " << completedCustomers[i].runningTime << " " << completedCustomers[i].waitingTime << endl;
+			}
 		}
+
 
 		return 0;
 	}
