@@ -82,7 +82,7 @@ public:
 	//	swapQueue(cust.queue,demote(cust.queue));
 	//	cust.queue=demote(cust.queue);
 	//}
-	int demote(int queueNum){
+	int checkForDemotion(int queueNum){
 		if(queueNum==1 && priority>1){
 			return 2;
 		} else if (queueNum==2 && priority>2){
@@ -424,7 +424,7 @@ public:
 		vector<Customer> completedCustomers;
 
 		CustomerQueue customerQueue;
-		Customer* currentCustomer;
+		Customer* currentCustomer=nullptr;
 		int totalCustomers = 0;
 		int counter=-1;
 		string str;
@@ -485,9 +485,13 @@ public:
 
 			customerQueue.checkForArrivals(arrivingCustomers);
 
-			//NEED A WAY TO CALL getFrontCustomer() ONCE ONLY
-			currentCustomer = customerQueue.getFrontCustomer();
-			currentCustomer->process(tick);
+			if(currentCustomer==nullptr){
+				currentCustomer = customerQueue.getFrontCustomer();
+				currentCustomer->process(tick);
+				if((currentCustomer->checkForDemotion(currentCustomer->queue)!=currentCustomer->queue)){
+					swapQueue(currentCustomer->queue,currentCustomer->checkForDemotion(currentCustomer->queue));
+				}
+			}
 
 			if(currentCustomer->queue!=0){
 				if(currentCustomer->ticketQuota!=0 && currentCustomer->ticketsProcessed%5==0){
