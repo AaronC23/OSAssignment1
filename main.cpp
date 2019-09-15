@@ -529,6 +529,7 @@ public:
 
 			if(currentCustomer->queue!=0){
 				if (currentCustomer->ticketsRemaining==0){
+					cout << "About to push back " << endl;
 					completedCustomers.push_back(*currentCustomer);
 					// customerQueue.quantum_customer=*currentCustomer;
 					customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
@@ -536,8 +537,22 @@ public:
 				} else if(currentCustomer->ticketQuota!=0 && ticket_processed%5==0){
 					currentCustomer->ticketQuota--;
 					currentCustomer->ticketsRemaining--;
-					cout << "current customer ticketQuota is: " << currentCustomer->ticketQuota << endl;
-					cout << "Current customer tickets remaining is: " << currentCustomer->ticketsRemaining << endl;
+					if(currentCustomer->ticketsRemaining==0){
+						cout << "About to push back " << endl;
+						completedCustomers.push_back(*currentCustomer);
+						customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
+						newCustomer=true;
+					} else if(currentCustomer->ticketQuota==0){
+						currentCustomer->waitCount=0;
+						if((currentCustomer->checkForDemotion(currentCustomer->queue)!=currentCustomer->queue)){
+							// customerQueue.quantum_customer=*currentCustomer;
+							customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
+							newCustomer=true;
+						}
+					}
+					cout << "Current customer ticketQuota is: " << currentCustomer->ticketQuota << endl;
+					cout << "Current customer ticketremaining is: " << currentCustomer->ticketsRemaining << endl;
+					cout << "------------------------------------" << endl;
 				} else if (currentCustomer->ticketQuota==0){
 					currentCustomer->waitCount=0;
 					if((currentCustomer->checkForDemotion(currentCustomer->queue)!=currentCustomer->queue)){
@@ -548,18 +563,29 @@ public:
 					newCustomer=true;
 				}
 			} else if (currentCustomer->queue==0){
-				if(!arrivedInQueueOne && currentCustomer->ticketQuota!=0 && currentCustomer->ticketsProcessed%5==0){
+				if(arrivedInQueueOne){
+					currentCustomer->waitCount++;
+					newCustomer=true;
+				} else if (currentCustomer->ticketsRemaining==0){
+						cout << "About to push back " << endl;
+						completedCustomers.push_back(*currentCustomer);
+						customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
+						newCustomer=true;
+				} else if (currentCustomer->ticketQuota!=0 && ticket_processed%5==0){
 					currentCustomer->ticketsRemaining--;
 					currentCustomer->ticketQuota--;
-				} else if (currentCustomer->ticketsRemaining==0){
-					cout << "Pushing back" << endl;
-					completedCustomers.push_back(*currentCustomer);
-					newCustomer=true;
+					if(currentCustomer->ticketsRemaining==0){
+						cout << "About to push back " << endl;
+						completedCustomers.push_back(*currentCustomer);
+						customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
+						newCustomer=true;
+					} else if(currentCustomer->ticketQuota==0){
+						currentCustomer->waitCount=0;
+						newCustomer=true;
+					}
 				} else if (currentCustomer->ticketQuota==0){
 					currentCustomer->waitCount=0;
-				} else if (arrivedInQueueOne){
-					currentCustomer->waitCount++;
- 					newCustomer=true;
+					newCustomer=true;
 				}
 			}
 
