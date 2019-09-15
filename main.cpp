@@ -67,7 +67,7 @@ public:
 	//Called when we are increasing a customers priority
 	//We then call promote to see if they need to be promoted.
 	int increasePriority(){
-		if(priority==1){	
+		if(priority==1){
 			return queue;
 		} else {
 			priority--;
@@ -171,11 +171,13 @@ public:
 		}
 	}
 
-	// check for new arrivals, and promotions and demotions to the queues
-	void checkForArrivals(vector<Customer> arrivingCustomers){
+	// check for new arrivals, and promotions and demotions to the queues, returns true if a customer was added to queue one this tick
+	bool checkForArrivals(vector<Customer> arrivingCustomers){
+		bool res = false;
 		// add new arrivals that go to queue one
 		for(int i=0;i<arrivingCustomers.size();i++){
 			if(arrivingCustomers[i].priority <= 3) {
+				res = true;
 				vector<Customer> * queueToAdd = getQueue(arrivingCustomers[i].priority);
 				queueToAdd->push_back(arrivingCustomers[i]);
 			}
@@ -186,8 +188,9 @@ public:
 			queueToAdd->push_back(quantum_customer);
 			quantum_customer.custID = -1;
 		}
-		// add promoted customers to sub_queue_three
+		// add promoted customers to sub_queue_three (queue one)
 		for(int i=0;i<promoted_customers.size();i++){
+			res = true;
 			sub_queue_three.push_back(promoted_customers[i]);
 		}
 		// add new arrivals that go to queue two
@@ -197,6 +200,7 @@ public:
 			}
 		}
 		promoted_customers.clear();
+		return res;
 	}
 
 	//Here you are John
@@ -483,7 +487,7 @@ public:
 				it++;
 			}
 
-			customerQueue.checkForArrivals(arrivingCustomers);
+			bool arrivedInQueueOne = customerQueue.checkForArrivals(arrivingCustomers);
 
 			if(currentCustomer==nullptr){
 				currentCustomer = customerQueue.getFrontCustomer();
@@ -506,7 +510,7 @@ public:
 			tick++;
 		}
 
-		sort(completedCustomers.begin(),it->completedCustomers.end(),IDCheck);
+		sort(completedCustomers.begin(),completedCustomers.end(),IDCheck);
 
 		// output results
 		cout << "name arrival end ready running waiting";
