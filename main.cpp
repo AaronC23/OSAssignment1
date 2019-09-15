@@ -487,7 +487,7 @@ public:
 		int ticket_processed = 0;
 		int fixed_quota=20;
 		// while(customerQueue.finishedCustomers < totalCustomers)
-		while (tick < 151){
+		while (tick < 750){
 			ticket_processed++;
 			// cout << "Tick: " << tick << endl;
 			vector<Customer> arrivingCustomers;
@@ -504,18 +504,24 @@ public:
 			bool arrivedInQueueOne = customerQueue.checkForArrivals(arrivingCustomers);
 
 			if(newCustomer){
-				currentCustomer = customerQueue.getFrontCustomer();
-				cout << "Getting a new customer!" << endl;
-				currentCustomer->newRun();
-				currentCustomer->process(tick);
-				newCustomer=false;
-				fixed_quota=20;
+				if(completedCustomers.size()==arrivingCustomers.size()){
+					// cout << "We done" << endl;
+				} else {
+					currentCustomer = customerQueue.getFrontCustomer();
+					cout << "Getting a new customer!" << endl;
+					currentCustomer->newRun();
+					currentCustomer->process(tick);
+					newCustomer=false;
+					fixed_quota=20;
+				}
 			}
 
 			if(currentCustomer->queue!=0){
 				if (currentCustomer->ticketsRemaining==0){
 					cout << "Pushing back" << endl;
 					completedCustomers.push_back(*currentCustomer);
+					customerQueue.quantum_customer=*currentCustomer;
+					customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
 					newCustomer=true;
 				} else if(currentCustomer->ticketQuota!=0 && ticket_processed%5==0){
 					currentCustomer->ticketQuota--;
@@ -525,7 +531,7 @@ public:
 				} else if (currentCustomer->ticketQuota==0){
 					currentCustomer->waitCount=0;
 					if((currentCustomer->checkForDemotion(currentCustomer->queue)!=currentCustomer->queue)){
-						customerQueue.quantum_customer=*currentCustomer;
+
 						customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
 						newCustomer=true;
 					}
