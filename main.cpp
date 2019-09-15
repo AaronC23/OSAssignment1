@@ -522,9 +522,6 @@ public:
 					}
 					customer.custID=StringToInt(id);
 				} else if (counter==1){
-					if(StringToInt(token)>250){
-						cout << "Big number?" << endl;
-					}
 					customer.arrivalTime=StringToInt(token);
 				} else if (counter==2){
 					customer.priority=StringToInt(token);
