@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <functional>
 using namespace std;
-
 class Customer{
 public:
 		int custID;
@@ -363,8 +362,10 @@ public:
 		}
 	}
 
+	//FIX THIS FUNCITON ASAP
 	void checkForPromotion(){
 		for (int i = 0; i < leaverbuster_queue.size(); i++){
+
 		}
 	}
 
@@ -406,6 +407,14 @@ public:
 		}
 	}
 
+	void deleteFromQueue(int custID, vector<Customer> * queueList){
+	    for(int i=0;i<queueList->size();i++){
+	        if(queueList->at(i).custID == custID){
+	            queueList->erase(queueList->begin()+i);
+	            break;
+	        }
+	    }
+	}
 
 	//Queue 1 functions
 
@@ -426,9 +435,10 @@ public:
 		// stores all the customers that will be added to the queue
 		map<int, vector<Customer> > parsedCustomers;
 		vector<Customer> completedCustomers;
-
 		CustomerQueue customerQueue;
-		Customer* currentCustomer=nullptr;
+		Customer* getCustomer;
+		getCustomer->custID=999;
+		Customer* currentCustomer=getCustomer;
 		int totalCustomers = 0;
 		int counter=-1;
 		string str;
@@ -489,18 +499,22 @@ public:
 
 			bool arrivedInQueueOne = customerQueue.checkForArrivals(arrivingCustomers);
 
-			if(currentCustomer==nullptr){
+			if(currentCustomer->custID==999){
 				currentCustomer = customerQueue.getFrontCustomer();
+				currentCustomer->newRun();
 				currentCustomer->process(tick);
-				if((currentCustomer->checkForDemotion(currentCustomer->queue)!=currentCustomer->queue)){
-					swapQueue(currentCustomer->queue,currentCustomer->checkForDemotion(currentCustomer->queue));
-				}
 			}
 
 			if(currentCustomer->queue!=0){
 				if(currentCustomer->ticketQuota!=0 && currentCustomer->ticketsProcessed%5==0){
 					currentCustomer->ticketQuota--;
 					currentCustomer->ticketsRemaining--;
+				} else if (currentCustomer->ticketQuota==0){
+					if((currentCustomer->checkForDemotion(currentCustomer->queue)!=currentCustomer->queue)){
+						customerQueue.quantum_customer=*currentCustomer;
+						customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
+					}
+					currentCustomer->custID=999;
 				}
 			} else if (currentCustomer->queue==0){
 				customerQueue.checkForArrivals(arrivingCustomers);
