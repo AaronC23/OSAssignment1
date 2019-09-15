@@ -435,7 +435,7 @@ public:
 	void deleteFromQueue(int custID, vector<Customer> * queueList){
 	    for(int i=0;i<queueList->size();i++){
 	        if(queueList->at(i).custID == custID){
-						cout << "deleting " << custID << " from queue" << endl;
+						// cout << "deleting " << custID << " from queue" << endl;
             queueList->erase(queueList->begin()+i);
             break;
 	        }
@@ -473,7 +473,7 @@ public:
 				leaverbuster_queue[i].fixQueue();
 				if(currentQueue!=leaverbuster_queue[i].queue){
 					// add to the promotion vector and delete from current one
-					cout << "customer " << leaverbuster_queue[i].custID << " has been promoted" << endl;
+					// cout << "customer " << leaverbuster_queue[i].custID << " has been promoted" << endl;
 					promoted_customers.push_back(leaverbuster_queue[i]);
 					leaverbuster_queue.erase(leaverbuster_queue.begin()+i);
 					i--;
@@ -538,12 +538,12 @@ public:
 			customer.ticketsRemaining=StringToInt(str);
 			// add customer to parsed customer map
 			parsedCustomers[customer.arrivalTime].push_back(customer);
-			cout << "adding customer " << customer.custID << " to map with time " << customer.arrivalTime << endl;
+			// cout << "adding customer " << customer.custID << " to map with time " << customer.arrivalTime << endl;
 			// customerQueue.addCustomer(customer);
 			totalCustomers++;
 		}
 
-		cout << "total customers is " << totalCustomers << endl;
+		// cout << "total customers is " << totalCustomers << endl;
 
 		customerQueue.checkQueues();
 
