@@ -522,6 +522,9 @@ public:
 					}
 					customer.custID=StringToInt(id);
 				} else if (counter==1){
+					if(StringToInt(token)>250){
+						cout << "Big number?" << endl;
+					}
 					customer.arrivalTime=StringToInt(token);
 				} else if (counter==2){
 					customer.priority=StringToInt(token);
@@ -623,8 +626,8 @@ public:
 		cout << "name arrival end ready running waiting" << endl;
 		for(int i=0;i<totalCustomers;i++){
 			if(completedCustomers[i].custID<1000){
-				completedCustomers[i].waitingTime=(completedCustomers[i].terminationTime-completedCustomers[i].firstProcessTime)-completedCustomers[i].runningTime;
-				cout << "a" << completedCustomers[i].custID << " " << completedCustomers[i].arrivalTime << " " << completedCustomers[i].terminationTime << " " << completedCustomers[i].firstProcessTime << " " << completedCustomers[i].runningTime << " " << completedCustomers[i].waitingTime << endl;
+			completedCustomers[i].waitingTime=(completedCustomers[i].terminationTime-completedCustomers[i].firstProcessTime)-completedCustomers[i].runningTime;
+			cout << "a" << completedCustomers[i].custID << " " << completedCustomers[i].arrivalTime << " " << completedCustomers[i].terminationTime << " " << completedCustomers[i].firstProcessTime << " " << completedCustomers[i].runningTime << " " << completedCustomers[i].waitingTime << endl;
 			}
 		}
 
