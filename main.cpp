@@ -381,18 +381,34 @@ public:
 		for(int i=0;i<sub_queue_one.size();i++){
 			sub_queue_one[i].waitCount++;
 			sub_queue_one[i].waitingTime++;
+			if(sub_queue_one[i].custID == processID) {
+				sub_queue_one[i].waitCount--;
+				sub_queue_one[i].waitingTime--;
+			}
 		}
 		for(int i=0;i<sub_queue_two.size();i++){
 			sub_queue_two[i].waitCount++;
 			sub_queue_two[i].waitingTime++;
+			if(sub_queue_two[i].custID == processID) {
+				sub_queue_two[i].waitCount--;
+				sub_queue_two[i].waitingTime--;
+			}
 		}
 		for(int i=0;i<sub_queue_three.size();i++){
 			sub_queue_three[i].waitCount++;
 			sub_queue_three[i].waitingTime++;
+			if(sub_queue_three[i].custID == processID) {
+				sub_queue_three[i].waitCount--;
+				sub_queue_three[i].waitingTime--;
+			}
 		}
 		for(int i=0;i<leaverbuster_queue.size();i++){
 			leaverbuster_queue[i].waitCount++;
 			leaverbuster_queue[i].waitingTime++;
+			if(leaverbuster_queue[i].custID == processID) {
+				leaverbuster_queue[i].waitCount--;
+				leaverbuster_queue[i].waitingTime--;
+			}
 			if(leaverbuster_queue[i].waitCount%8==0){
 				int temp=leaverbuster_queue[i].increasePriority();
 				if(temp!=leaverbuster_queue[i].queue){
