@@ -485,9 +485,7 @@ public:
 		// process the queue
 		int tick = 0;
 		int ticket_processed = 0;
-		int fixed_quota=20;
-		// while(customerQueue.finishedCustomers < totalCustomers)
-		while (tick < 750){
+		while(completedCustomers.size() < totalCustomers){
 			ticket_processed++;
 			// cout << "Tick: " << tick << endl;
 			vector<Customer> arrivingCustomers;
@@ -505,18 +503,18 @@ public:
 
 			if(newCustomer){
 				currentCustomer = customerQueue.getFrontCustomer();
-				// cout << "Getting a new customer!" << endl;
-				currentCustomer->newRun();
+				cout << "New customer has ID: " << currentCustomer->custID << endl;
+				if(currentCustomer->queue==0){
+					currentCustomer->newRun();currentCustomer->ticketQuota=20;
+				}
 				currentCustomer->process(tick);
 				newCustomer=false;
-				fixed_quota=20;
 			}
 
 			if(currentCustomer->queue!=0){
 				if (currentCustomer->ticketsRemaining==0){
-					// cout << "Pushing back" << endl;
 					completedCustomers.push_back(*currentCustomer);
-					customerQueue.quantum_customer=*currentCustomer;
+					// customerQueue.quantum_customer=*currentCustomer;
 					customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
 					newCustomer=true;
 				} else if(currentCustomer->ticketQuota!=0 && ticket_processed%5==0){
@@ -527,16 +525,16 @@ public:
 				} else if (currentCustomer->ticketQuota==0){
 					currentCustomer->waitCount=0;
 					if((currentCustomer->checkForDemotion(currentCustomer->queue)!=currentCustomer->queue)){
-
+						// customerQueue.quantum_customer=*currentCustomer;
 						customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
 						newCustomer=true;
 					}
 					newCustomer=true;
 				}
 			} else if (currentCustomer->queue==0){
-				if(!arrivedInQueueOne && fixed_quota!=0 && currentCustomer->ticketsProcessed%5==0){
+				if(!arrivedInQueueOne && currentCustomer->ticketQuota!=0 && currentCustomer->ticketsProcessed%5==0){
 					currentCustomer->ticketsRemaining--;
-					fixed_quota--;
+					currentCustomer->ticketQuota--;
 				} else if (currentCustomer->ticketsRemaining==0){
 					cout << "Pushing back" << endl;
 					completedCustomers.push_back(*currentCustomer);
@@ -558,7 +556,7 @@ public:
 		sort(completedCustomers.begin(),completedCustomers.end(),IDCheck);
 
 		//output results
-		cout << "name arrival end ready running waiting";
+		cout << "name arrival end ready running waiting" << endl;
 		for(int i=0;i<totalCustomers;i++){
 			cout << "a" << completedCustomers[i].custID << " " << completedCustomers[i].arrivalTime << " " << completedCustomers[i].terminationTime << " " << completedCustomers[i].firstProcessTime << " " << completedCustomers[i].runningTime << " " << completedCustomers[i].waitingTime << endl;
 		}
