@@ -436,7 +436,7 @@ public:
 		map<int, vector<Customer> > parsedCustomers;
 		vector<Customer> completedCustomers;
 		CustomerQueue customerQueue;
-		Customer* getCustomer;
+		Customer* getCustomer = new Customer;
 		getCustomer->custID=999;
 		Customer* currentCustomer=getCustomer;
 		int totalCustomers = 0;
@@ -476,6 +476,7 @@ public:
 			customer.ticketsRemaining=StringToInt(str);
 			// add customer to parsed customer map
 			parsedCustomers[customer.arrivalTime].push_back(customer);
+			cout << "adding customer " << customer.custID << " to map with time " << customer.arrivalTime << endl;
 			// customerQueue.addCustomer(customer);
 			totalCustomers++;
 		}
@@ -488,7 +489,7 @@ public:
 		while (tick < 500){
 			vector<Customer> arrivingCustomers;
 			// sort the list of arriving customers
-			if(it->first == tick) {
+			if(it->first == tick && it != parsedCustomers.end()) {
 				// add each customer at this instance of time to a queue
 				cout << "adding " << it->second.size() << " customers to the queue at time " << tick << endl;
 				// sort it based on ID already, they wont be added to the same queue anyway
@@ -527,10 +528,10 @@ public:
 		sort(completedCustomers.begin(),completedCustomers.end(),IDCheck);
 
 		// output results
-		cout << "name arrival end ready running waiting";
-		for(int i=0;i<totalCustomers;i++){
-			cout << "a" << completedCustomers[i].custID << " " << completedCustomers[i].arrivalTime << " " << completedCustomers[i].terminationTime << " " << completedCustomers[i].firstProcessTime << " " << completedCustomers[i].runningTime << " " << completedCustomers[i].waitingTime << endl;
-		}
+		// cout << "name arrival end ready running waiting";
+		// for(int i=0;i<totalCustomers;i++){
+		// 	cout << "a" << completedCustomers[i].custID << " " << completedCustomers[i].arrivalTime << " " << completedCustomers[i].terminationTime << " " << completedCustomers[i].firstProcessTime << " " << completedCustomers[i].runningTime << " " << completedCustomers[i].waitingTime << endl;
+		// }
 
 		return 0;
 	}
