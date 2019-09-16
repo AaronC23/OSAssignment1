@@ -58,7 +58,7 @@ public:
 		totalProcessTime++;
 		runningTime++;
 		if(totalProcessTime%5==0){
-			cout << "decreasing tickets remaining and ticket quota for customer " << custID << endl;
+			// cout << "decreasing tickets remaining and ticket quota for customer " << custID << endl;
 			ticketsRemaining--;
 			ticketQuota--;
 		}
@@ -66,11 +66,11 @@ public:
 
 	void finishRun(){
 		waitCount++;
-		cout << "customer " << custID << " has finished a run, waitCount is " << waitCount << endl;
+		// cout << "customer " << custID << " has finished a run, waitCount is " << waitCount << endl;
 		if(waitCount >= 3){
 			waitCount = 0;
 			priority++;
-			cout << "customer " << custID << " has finished 3 runs, changing priority to " << priority << endl;
+			// cout << "customer " << custID << " has finished 3 runs, changing priority to " << priority << endl;
 		}
 	}
 
@@ -108,7 +108,7 @@ public:
 		if(priority > 3) afterQueue = 0;
 		if(currentQueue != afterQueue){
 			res = true;
-			cout << "customer " << custID << " has been changed to queue " << afterQueue << endl;
+			// cout << "customer " << custID << " has been changed to queue " << afterQueue << endl;
 		}
 		queue = afterQueue;
 		return res;
@@ -212,13 +212,13 @@ public:
 			if(arrivingCustomers[i].priority <= 3) {
 				res = true;
 				vector<Customer> * queueToAdd = getQueue(arrivingCustomers[i].queue);
-				cout << "1 adding customer " << arrivingCustomers[i].custID << " to queue " << arrivingCustomers[i].queue << endl;
+				// cout << "1 adding customer " << arrivingCustomers[i].custID << " to queue " << arrivingCustomers[i].queue << endl;
 				queueToAdd->push_back(arrivingCustomers[i]);
 			}
 		}
 		// add completed time weight customer
 		if(quantum_customer.custID != -1){
-			cout << "2 adding customer " << quantum_customer.custID << " to queue " << quantum_customer.queue << endl;
+			// cout << "2 adding customer " << quantum_customer.custID << " to queue " << quantum_customer.queue << endl;
 			vector<Customer> * queueToAdd = getQueue(quantum_customer.queue);
 			queueToAdd->push_back(quantum_customer);
 			quantum_customer.custID = -1;
@@ -226,13 +226,13 @@ public:
 		// add promoted customers to sub_queue_three (queue one)
 		for(int i=0;i<promoted_customers.size();i++){
 			res = true;
-			cout << "3 adding customer " << promoted_customers[i].custID << " to queue " << promoted_customers[i].queue << endl;
+			// cout << "3 adding customer " << promoted_customers[i].custID << " to queue " << promoted_customers[i].queue << endl;
 			sub_queue_three.push_back(promoted_customers[i]);
 		}
 		// add new arrivals that go to queue two
 		for(int i=0;i<arrivingCustomers.size();i++){
 			if(arrivingCustomers[i].priority > 3){
-				cout << "4 adding customer " << arrivingCustomers[i].custID << " to queue " << arrivingCustomers[i].queue << endl;
+				// cout << "4 adding customer " << arrivingCustomers[i].custID << " to queue " << arrivingCustomers[i].queue << endl;
 				leaverbuster_queue.push_back(arrivingCustomers[i]);
 			}
 		}
@@ -310,21 +310,21 @@ public:
 
 	//debug function
 	void checkQueues(){
-		cout << "subq 1" << endl;
+		// cout << "subq 1" << endl;
 		for(int i=0;i<sub_queue_one.size();i++){
-			cout << "a" << sub_queue_one[i].custID << " priority: " << sub_queue_one[i].priority << " arrivalTime: " << sub_queue_one[i].arrivalTime << " runningTime: " << sub_queue_one[i].runningTime << " ticketsRemaining: "  << sub_queue_one[i].ticketsRemaining << " waitCount: " << sub_queue_one[i].waitCount << endl;
+			// cout << "a" << sub_queue_one[i].custID << " priority: " << sub_queue_one[i].priority << " arrivalTime: " << sub_queue_one[i].arrivalTime << " runningTime: " << sub_queue_one[i].runningTime << " ticketsRemaining: "  << sub_queue_one[i].ticketsRemaining << " waitCount: " << sub_queue_one[i].waitCount << endl;
 		}
-		cout << "subq 2" << endl;
+		// cout << "subq 2" << endl;
 		for(int i=0;i<sub_queue_two.size();i++){
-			cout << "a" << sub_queue_two[i].custID << " priority: " << sub_queue_two[i].priority << " arrivalTime: " << sub_queue_two[i].arrivalTime << " runningTime: " << sub_queue_two[i].runningTime << " ticketsRemaining: "  << sub_queue_two[i].ticketsRemaining << " waitCount: " << sub_queue_two[i].waitCount << endl;
+			// cout << "a" << sub_queue_two[i].custID << " priority: " << sub_queue_two[i].priority << " arrivalTime: " << sub_queue_two[i].arrivalTime << " runningTime: " << sub_queue_two[i].runningTime << " ticketsRemaining: "  << sub_queue_two[i].ticketsRemaining << " waitCount: " << sub_queue_two[i].waitCount << endl;
 		}
-		cout << "subq 3" << endl;
+		// cout << "subq 3" << endl;
 		for(int i=0;i<sub_queue_three.size();i++){
-			cout << "a" << sub_queue_three[i].custID << " priority: " << sub_queue_three[i].priority << " arrivalTime: " << sub_queue_three[i].arrivalTime << " runningTime: " << sub_queue_three[i].runningTime << " ticketsRemaining: "  << sub_queue_three[i].ticketsRemaining << " waitCount: " << sub_queue_three[i].waitCount << endl;
+			// cout << "a" << sub_queue_three[i].custID << " priority: " << sub_queue_three[i].priority << " arrivalTime: " << sub_queue_three[i].arrivalTime << " runningTime: " << sub_queue_three[i].runningTime << " ticketsRemaining: "  << sub_queue_three[i].ticketsRemaining << " waitCount: " << sub_queue_three[i].waitCount << endl;
 		}
-		cout << "queue 2" << endl;
+		// cout << "queue 2" << endl;
 		for(int i=0;i<leaverbuster_queue.size();i++){
-			cout << "a" << leaverbuster_queue[i].custID << " priority: " << leaverbuster_queue[i].priority << " arrivalTime: " << leaverbuster_queue[i].arrivalTime << " runningTime: " << leaverbuster_queue[i].runningTime << " ticketsRemaining: " << leaverbuster_queue[i].ticketsRemaining << " waitCount: " << leaverbuster_queue[i].waitCount << endl;
+			// cout << "a" << leaverbuster_queue[i].custID << " priority: " << leaverbuster_queue[i].priority << " arrivalTime: " << leaverbuster_queue[i].arrivalTime << " runningTime: " << leaverbuster_queue[i].runningTime << " ticketsRemaining: " << leaverbuster_queue[i].ticketsRemaining << " waitCount: " << leaverbuster_queue[i].waitCount << endl;
 		}
 	}
 
@@ -376,24 +376,19 @@ public:
 	void printQueue(int queueNum){
 		vector<Customer> * temp = getQueue(queueNum);
 		for (int i = 0; i < temp->size(); i++){
-			cout << temp->at(i).custID << endl;
+			// cout << temp->at(i).custID << endl;
 		}
 	}
 
 	Customer* getFrontCustomer(){
-		if(sub_queue_one.size()==0){
-			if(sub_queue_two.size()!=0){
-				return &sub_queue_two[0];
-			} else if(sub_queue_two.size()==0){
-				if(sub_queue_three.size()!=0){
-					return &sub_queue_three[0];
-				} else if(sub_queue_three.size()==0){
-					return &leaverbuster_queue[0];
-				}
-			}
-		} else if (sub_queue_one.size()!=0){
+		if(sub_queue_one.size()>0){
 			return &sub_queue_one[0];
+		} else if(sub_queue_two.size()>0){
+			return &sub_queue_two[0];
+		} else if(sub_queue_three.size()>0){
+			return &sub_queue_three[0];
 		}
+		return &leaverbuster_queue[0];
 	}
 
 	//FIX THIS FUNCITON ASAP
@@ -444,7 +439,7 @@ public:
 	void deleteFromQueue(int custID, vector<Customer> * queueList){
 	    for(int i=0;i<queueList->size();i++){
 	        if(queueList->at(i).custID == custID){
-						cout << "deleting " << custID << " from queue" << endl;
+						// cout << "deleting " << custID << " from queue" << endl;
             queueList->erase(queueList->begin()+i);
             break;
 	        }
@@ -452,7 +447,7 @@ public:
 	}
 
 	void finishRun(int processID, vector<int> arrivingCustomers){
-		cout << "increasing waitCount of all customers in leaverbuster_queue except " << processID << endl;
+		// cout << "increasing waitCount of all customers in leaverbuster_queue except " << processID << endl;
 		totalRuns++;
 		// for(int i=0;i<sub_queue_one.size();i++){
 		// 	sub_queue_one[i].waitCount++;
@@ -476,7 +471,7 @@ public:
 			// decrement wait count for customers that just arrived as that will be cancelled out next
 			for(int j=0;j<arrivingCustomers.size();j++){
 				if(leaverbuster_queue[i].custID == arrivingCustomers[j]){
-					cout << "customer " << arrivingCustomers[j] << " arrived during this run, decreasing waitCount preemptively" << endl;
+					// cout << "customer " << arrivingCustomers[j] << " arrived during this run, decreasing waitCount preemptively" << endl;
 					leaverbuster_queue[i].waitCount--;
 					break;
 				}
@@ -485,16 +480,16 @@ public:
 			if(leaverbuster_queue[i].custID == processID) {
 				leaverbuster_queue[i].waitCount--;
 			}
-			cout << "customer " << leaverbuster_queue[i].custID << " wait count has increased" << endl;
+			// cout << "customer " << leaverbuster_queue[i].custID << " wait count has increased" << endl;
 			if(leaverbuster_queue[i].waitCount==8){
 				int currentQueue = leaverbuster_queue[i].queue;
-				cout << "decreasing priority of customer " << leaverbuster_queue[i].custID << endl;
+				// cout << "decreasing priority of customer " << leaverbuster_queue[i].custID << endl;
 				leaverbuster_queue[i].priority--;
 				leaverbuster_queue[i].waitCount=0;
 				leaverbuster_queue[i].fixQueue();
 				if(currentQueue!=leaverbuster_queue[i].queue){
 					// add to the promotion vector and delete from current one
-					cout << "customer " << leaverbuster_queue[i].custID << " has been promoted" << endl;
+					// cout << "customer " << leaverbuster_queue[i].custID << " has been promoted" << endl;
 					promoted_customers.push_back(leaverbuster_queue[i]);
 					leaverbuster_queue.erase(leaverbuster_queue.begin()+i);
 					i--;
@@ -556,18 +551,18 @@ public:
 				}
 				str.erase(0, pos + delimiter.length());
 			}
-			cout << "parsed customer priority is " << customer.priority << endl;
+			// cout << "parsed customer priority is " << customer.priority << endl;
 			customer.ticketsRemaining=StringToInt(str);
 			customer.fixPriority();
 			// add customer to parsed customer map
 			parsedCustomers[customer.arrivalTime].push_back(customer);
-			cout << "adding customer " << customer.custID << " p: " << customer.priority << " to map with time " << customer.arrivalTime << endl;
-			cout << "a" << customer.custID << " " << customer.arrivalTime << " " << customer.priority << " " << customer.waitCount << " " << customer.ticketsRemaining << endl;
+			// cout << "adding customer " << customer.custID << " p: " << customer.priority << " to map with time " << customer.arrivalTime << endl;
+			// cout << "a" << customer.custID << " " << customer.arrivalTime << " " << customer.priority << " " << customer.waitCount << " " << customer.ticketsRemaining << endl;
 			// customerQueue.addCustomer(customer);
 			totalCustomers++;
 		}
 
-		cout << "total customers is " << totalCustomers << endl;
+		// cout << "total customers is " << totalCustomers << endl;
 
 		customerQueue.checkQueues();
 
@@ -575,6 +570,7 @@ public:
 		// process the queue
 		int tick = 0;
 		int check = 0;
+		bool queueOneCust = -1;
 		// keep track of customers who arrive during a run
 		vector<int> arrivingCustomersID;
 		while(completedCustomers.size() < totalCustomers){
@@ -584,7 +580,7 @@ public:
 			// sort the list of arriving customers
 			if(it->first == tick && it != parsedCustomers.end()) {
 				// add each customer at this instance of time to a queue
-				cout << "adding " << it->second.size() << " customers to the queue at time " << tick << endl;
+				// cout << "adding " << it->second.size() << " customers to the queue at time " << tick << endl;
 				// sort it based on ID already, they wont be added to the same queue anyway
 				sort(it->second.begin(),it->second.end(),IDCheck);
 				arrivingCustomers = it->second;
@@ -601,26 +597,26 @@ public:
 			}
 			if(customerQueue.customersLeft()==0){
 				tick++;
-				cout << "----------------------------------------" << endl;
+				// cout << "----------------------------------------" << endl;
 				continue;
 			}
 			// get the customer at the front of the queue if the queue is queue two
-			if((customerQueue.getFrontCustomer()->priority <= 3 && currentCustomer->queue == 0) || newCustomer){
+			if((customerQueue.getFrontCustomer()->priority <= 3 && currentCustomer->queue == 0) || newCustomer || currentCustomer->custID>totalCustomers){
 				int newCustID = customerQueue.getFrontCustomer()->custID;
-				cout << "getting customer " << newCustID << endl;
+				// cout << "getting customer " << newCustID << endl;
 				if(customerQueue.getFrontCustomer()->priority <= 3 && currentCustomer->queue == 0 && !newCustomer){
 					Customer toCopy = *currentCustomer;
-					cout << "customer "  << currentCustomer->custID << " should be interrupted" << endl;
+					// cout << "customer "  << currentCustomer->custID << " should be interrupted" << endl;
 					customerQueue.finishRun(currentCustomer->custID, arrivingCustomersID);
 					arrivingCustomersID.clear();
 					vector<Customer> * queueToDelFrom = customerQueue.getQueue(currentCustomer->queue);
 					toCopy.waitCount=0;
 					toCopy.checkForDemotion();
-					cout << "moving customer " << toCopy.custID << " to the back of leaverbuster_queue" << endl;
+					// cout << "moving customer " << toCopy.custID << " to the back of leaverbuster_queue" << endl;
 					customerQueue.deleteFromQueue(currentCustomer->custID,queueToDelFrom);
 					queueToDelFrom->push_back(toCopy);
 					// customerQueue.leaverbuster_queue.push_back(*currentCustomer);
-					cout << "check" << endl;
+					// cout << "check" << endl;
 					customerQueue.checkQueues();
 				}
 				currentCustomer = customerQueue.getFrontCustomer();
@@ -631,9 +627,12 @@ public:
 					currentCustomer->ticketQuota=20;
 				}
 			}
-			cout << "we are processing customer " << currentCustomer->custID << " at tick " << tick << endl;
-			cout << "he has " << currentCustomer->ticketsRemaining << " tickets remaining and a quota of " << currentCustomer->ticketQuota << endl;
+			// cout << "we are processing customer " << currentCustomer->custID << " at tick " << tick << endl;
+			// cout << "he has " << currentCustomer->ticketsRemaining << " tickets remaining and a quota of " << currentCustomer->ticketQuota << endl;
 			currentCustomer->process(tick);
+
+			if(tick == 866) customerQueue.checkQueues();
+
 			// customer finished completely or customer finished their quota run
 			if(currentCustomer->ticketsRemaining==0){
 				// customerQueue.finishRun(currentCustomer->custID);
@@ -641,12 +640,12 @@ public:
 				arrivingCustomersID.clear();
 				newCustomer = true;
 				currentCustomer->terminationTime = tick+1;
-				cout << "adding " << currentCustomer->custID << " to completed customers at tick " << tick << endl;
+				// cout << "adding " << currentCustomer->custID << " to completed customers at tick " << tick << endl;
 				completedCustomers.push_back(*currentCustomer);
 				customerQueue.deleteFromQueue(currentCustomer->custID,customerQueue.getQueue(currentCustomer->queue));
 				customerQueue.checkQueues();
 			} else if(currentCustomer->ticketQuota==0){
-				cout << "customer " << currentCustomer->custID << " finished its quota for this run" << endl;
+				// cout << "customer " << currentCustomer->custID << " finished its quota for this run" << endl;
 				customerQueue.finishRun(currentCustomer->custID, arrivingCustomersID);
 				arrivingCustomersID.clear();
 				newCustomer = true;
@@ -660,11 +659,11 @@ public:
 			}
 			// make everyone else wait
 			customerQueue.updateCustomers(currentCustomer->custID);
-			// cout << "total runs so far is " << customerQueue.totalRuns << endl;
+			// // cout << "total runs so far is " << customerQueue.totalRuns << endl;
 			tick++;
 		}
 
-		cout << "completed customers size: " << completedCustomers.size() << endl;
+		// cout << "completed customers size: " << completedCustomers.size() << endl;
 
 		sort(completedCustomers.begin(),completedCustomers.end(),TerminationTimeCheck);
 		//output results
